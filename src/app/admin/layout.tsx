@@ -1,6 +1,9 @@
+import Link from 'next/link';
+import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { auth, signOut } from '@/lib/auth/config';
 import { Button } from '@/components/ui/button';
+import { AdminSubNav } from '@/components/admin/AdminSubNav';
 
 export default async function AdminLayout({
   children,
@@ -32,19 +35,34 @@ export default async function AdminLayout({
     );
   }
 
+  const { name, email, image } = session.user;
+
   return (
-    <div className="container mx-auto max-w-5xl px-4 py-10">
-      <div className="flex justify-end mb-4">
-        <form
-          action={async () => {
-            'use server';
-            await signOut({ redirectTo: '/' });
-          }}
+    <div className="container mx-auto max-w-5xl px-4 py-8">
+      <div className="flex items-center justify-between mb-6 gap-4">
+        <AdminSubNav />
+        <Link
+          href="/admin/profil"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-muted transition-colors"
+          aria-label="Profil"
         >
-          <Button variant="ghost" size="sm" type="submit">
-            Logg ut ({session.user.email})
-          </Button>
-        </form>
+          {image ? (
+            <Image
+              src={image}
+              alt=""
+              width={28}
+              height={28}
+              className="rounded-full"
+            />
+          ) : (
+            <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
+              {(name ?? email ?? '?').charAt(0).toUpperCase()}
+            </div>
+          )}
+          <span className="text-sm hidden sm:inline max-w-[160px] truncate">
+            {name ?? email}
+          </span>
+        </Link>
       </div>
       {children}
     </div>
