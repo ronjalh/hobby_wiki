@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, FileText, User } from 'lucide-react';
+import { LayoutDashboard, FileText, Users, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const LINKS = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
   { href: '/admin/innlegg', label: 'Innlegg', icon: FileText, exact: false },
+  { href: '/admin/brukere', label: 'Brukere', icon: Users, exact: true },
   { href: '/admin/profil', label: 'Profil', icon: User, exact: true },
 ];
 
@@ -29,7 +30,7 @@ export function AdminSubNav() {
             className={cn(
               'flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap',
               active
-                ? 'bg-foreground text-background'
+                ? 'bg-[hsl(270,30%,94%)] text-[hsl(270,55%,35%)]'
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground',
             )}
           >
