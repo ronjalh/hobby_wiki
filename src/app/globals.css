@@ -181,10 +181,36 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background:
+      radial-gradient(circle at 15% 10%, hsl(210, 60%, 95%) 0%, transparent 50%),
+      radial-gradient(circle at 85% 90%, hsl(270, 30%, 97%) 0%, transparent 55%),
+      hsl(210, 30%, 99%);
+    min-height: 100vh;
   }
   html {
     @apply font-sans;
+  }
+
+  /* Mesh gradient per hobby — settes på wrapper med data-hobby */
+  [data-hobby="lys"] body,
+  body:has([data-hobby="lys"]) {
+    background:
+      radial-gradient(circle at 20% 15%, hsl(270, 80%, 93%) 0%, transparent 45%),
+      radial-gradient(circle at 80% 25%, hsl(280, 70%, 96%) 0%, transparent 50%),
+      radial-gradient(circle at 50% 85%, hsl(260, 75%, 94%) 0%, transparent 50%),
+      radial-gradient(circle at 10% 75%, hsl(290, 60%, 96%) 0%, transparent 40%),
+      hsl(270, 40%, 99%);
+  }
+
+  [data-hobby="smykker"] body,
+  body:has([data-hobby="smykker"]) {
+    background:
+      radial-gradient(circle at 25% 20%, hsl(180, 70%, 94%) 0%, transparent 45%),
+      radial-gradient(circle at 75% 35%, hsl(190, 65%, 96%) 0%, transparent 50%),
+      radial-gradient(circle at 50% 80%, hsl(170, 70%, 93%) 0%, transparent 50%),
+      radial-gradient(circle at 90% 65%, hsl(200, 60%, 97%) 0%, transparent 40%),
+      hsl(180, 40%, 99%);
   }
   h1, h2, h3, h4, h5, h6, .font-serif {
     font-family: var(--font-serif), ui-serif, Georgia, serif;

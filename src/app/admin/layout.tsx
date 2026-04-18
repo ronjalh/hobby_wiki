@@ -11,7 +11,7 @@ export default async function AdminLayout({
   if (!session?.user) redirect('/login');
   if (session.user.role !== 'admin') {
     return (
-      <main className="min-h-screen flex items-center justify-center px-4">
+      <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4">
         <div className="max-w-md text-center space-y-4">
           <h1 className="text-3xl font-serif">Ikke tilgang</h1>
           <p className="text-muted-foreground">
@@ -28,29 +28,25 @@ export default async function AdminLayout({
             </Button>
           </form>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b px-4 py-3 flex items-center justify-between">
-        <h1 className="font-serif text-lg">Hobby Wiki — Admin</h1>
-        <div className="flex items-center gap-3 text-sm">
-          <span className="text-muted-foreground">{session.user.email}</span>
-          <form
-            action={async () => {
-              'use server';
-              await signOut({ redirectTo: '/' });
-            }}
-          >
-            <Button variant="ghost" size="sm" type="submit">
-              Logg ut
-            </Button>
-          </form>
-        </div>
-      </header>
-      <main className="px-4 py-8 max-w-5xl mx-auto">{children}</main>
+    <div className="container mx-auto max-w-5xl px-4 py-10">
+      <div className="flex justify-end mb-4">
+        <form
+          action={async () => {
+            'use server';
+            await signOut({ redirectTo: '/' });
+          }}
+        >
+          <Button variant="ghost" size="sm" type="submit">
+            Logg ut ({session.user.email})
+          </Button>
+        </form>
+      </div>
+      {children}
     </div>
   );
 }
