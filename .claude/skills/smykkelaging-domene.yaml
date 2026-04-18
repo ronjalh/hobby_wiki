@@ -1,0 +1,208 @@
+name: smykkelaging-domene
+description: Domain knowledge for jewelry making — metals, beads, techniques, findings
+version: 1.0.0
+tags: [domain, smykkelaging, jewelry, content]
+
+instructions: |
+  # Smykkelaging — Domenekunnskap
+
+  ## Mål
+  Gir Claude vokabular og kontekst når Ronja ber om hjelp til å skrive innlegg, foreslå tagger, eller strukturere innhold om smykkelaging.
+
+  > **Ronja**: Fyll inn dine egne materialer, teknikker og leverandører i "Mine notater" seksjonene.
+
+  ## Metaller
+
+  ### Sterling sølv (925)
+  - 92.5% sølv, 7.5% andre metaller (oftest kopper)
+  - Tarnish (oksidering) over tid — polér eller bruk anti-tarnish
+  - Lovpålagt merking: "925" eller "sterling"
+  - Populært: tråd (wire), plater, kjeder, findings
+
+  ### Fine silver (999)
+  - Rent sølv, mykere enn sterling
+  - Mindre tarnish
+  - For PMC (Precious Metal Clay) teknikker
+
+  ### Gull-filled (14/20)
+  - Tykk gull-lag mekanisk bondet til base-metall
+  - Mye rimeligere enn solid gull
+  - Varer tiår med god pleie
+
+  ### Gull-belagt / forgylt
+  - Tynt gull-lag (kan slites av)
+  - Rimeligere enn gull-filled
+
+  ### Kopper
+  - Varm, rødlig farge
+  - Billig, god å øve på
+  - Oksiderer (kan være ønsket for patina-effekt)
+
+  ### Messing
+  - Gul, kopper+sink blanding
+  - Tarnish over tid
+
+  ### Rustfritt stål
+  - Hypoallergent, ingen tarnish
+  - Hardt å forme
+
+  ### Niobium / titan
+  - Hypoallergent
+  - Kan anodiseres for farger
+
+  ### Mine notater (Ronja fyller inn)
+  <!-- Hvilke metaller jobber du med? Leverandører? -->
+
+  ## Tråd (wire)
+
+  ### Tykkelser (gauge)
+  Amerikansk gauge-system:
+  - **10 gauge** (~2.6 mm) — veldig tykk, struktur
+  - **16 gauge** (~1.3 mm) — jump rings, bra for chainmail
+  - **18 gauge** (~1.0 mm) — standard wire-wrap, jump rings
+  - **20 gauge** (~0.8 mm) — wire-wrap, earwires
+  - **22 gauge** (~0.6 mm) — delikat wire-wrap
+  - **24 gauge** (~0.5 mm) — headpins, fin wrap
+  - **26-28 gauge** — veldig fint, perleveving
+
+  ### Hardhet
+  - **Dead-soft** — lettest å forme, bøyes lett tilbake
+  - **Half-hard** — godt kompromiss, standard for wire-wrap
+  - **Full-hard** — spring-wire, for clasps
+
+  ## Perler
+
+  ### Glass
+  - **Seed beads** — bittesmå (11/0, 15/0), perleveving
+  - **Crystal** (Swarovski, Preciosa) — høy-kvalitet, mange farger
+  - **Czech fire-polish** — polert, variert
+  - **Lampwork** — håndlaget, unike
+
+  ### Edelsteiner
+  - **Ametyst** — lilla
+  - **Rosenkvarts** — lys rosa
+  - **Lapis lazuli** — dyp blå
+  - **Howlitt** — hvit med grå stripe
+  - **Jade**, **turkis**, **onyx**, **månesten**
+
+  Form på steiner: rondelle, faset, chip, cabochon, teardrop.
+
+  ### Perle (saltvann/ferskvann)
+  - Ekte perler — ekte eller kunstig-dyrket
+  - "Shell pearls" — imitasjon
+
+  ### Plast/resin
+  - Billig, lette, mange former
+
+  ### Mine notater
+  <!-- Dine favorittperler? Leverandører (Perleriet? Etsy?)? -->
+
+  ## Findings (smykkedeler)
+
+  - **Jump rings** — runde ringer som holder elementer sammen
+  - **Clasps** — låser:
+    - Lobster claw, spring ring, toggle, magnetic, hook-and-eye
+  - **Earwires** — øredobb-krok (hypoallergene viktig)
+  - **Headpins / eyepins** — for perle-dråper
+  - **Crimp beads** — låser tau/tråd ved clasps
+  - **Bead caps** — dekorasjon rundt perler
+  - **Spacer beads** — små mellomperler
+
+  ## Tråd for perling (ikke wire)
+
+  - **Silkesnor** — klassisk for perler, må knytes
+  - **Beading wire** (f.eks. Soft Flex) — stål med nylon-kappe, sterk, fleksibel
+  - **FireLine / WildFire** — for perleveving, tynn men sterk
+  - **Elastisk** — for armbånd uten clasp
+  - **Hemp / lær** — rustikk
+
+  ## Verktøy
+
+  ### Tenger
+  - **Chain-nose (flat-nose)** — gripe, bøye skarpt
+  - **Round-nose** — lage løkker
+  - **Flat-nose** — flate flater, gripe uten merker
+  - **Crimping pliers** — sette crimp beads
+  - **Nylon-jaw** — rette ut tråd uten å merke
+
+  ### Kuttere
+  - **Wire cutters** — kutte metall-tråd
+  - **Flush cutters** — gir rettere kutt
+  - **Memory wire cutters** — for hard memory-wire
+
+  ### Annet
+  - **Mandrel** — for ring-størrelse, wire-wrapping
+  - **Bead board** — layout-matte med spor
+  - **Polishing cloth** — fjerne tarnish
+
+  ## Teknikker
+
+  ### Wire-wrapping
+  Bøye og rulle wire for å feste perler/steiner. Mange stiler (herringbone, basket, free-form).
+
+  ### Chainmail
+  Koble jump rings til mønster (European 4-in-1, Byzantine, Persian).
+
+  ### Stringing
+  Tre perler på snor/wire. Enklest start.
+
+  ### Perleveving (beading)
+  - **Peyote** — tett veving, geometriske mønstre
+  - **Right-angle weave (RAW)** — mer fleksibel
+  - **Brick stitch**, **herringbone**, **ladder stitch**
+
+  ### Bead embroidery
+  Sy perler på stoff/skinn, lage broderier og cabochon-innfatninger.
+
+  ### Metal clay (PMC)
+  Sølv-leire som tørkes og brennes til fint sølv.
+
+  ### Soldering
+  Smelte sammen metall-deler med flam og loddemasse. Mer avansert.
+
+  ### Forming
+  Hammering, doming, rolling — gi metall form.
+
+  ## Smykketyper og standardmål
+
+  - **Halskjede**:
+    - Choker: 35-40 cm
+    - Princess: 45 cm (mest vanlig)
+    - Matinee: 55-60 cm
+    - Opera: 75-90 cm
+  - **Armbånd**:
+    - Normal dame: 18-19 cm
+    - Herre: 20-22 cm
+  - **Øredobber**:
+    - Stud, drop, hoop, chandelier
+  - **Ringer**:
+    - Størrelse i mm diameter eller bokstav/nummer avhengig av system
+
+  ## Allergier
+  Vanlige utløsere:
+  - **Nikkel** — vanligst
+  - **Kopper** — mindre vanlig
+  - **Noen gull-legeringer** (med nikkel)
+
+  Hypoallergene: kirurgisk stål, titan, niobium, 14k+ solid gull, sterling (hvis nikkel-fri legering).
+
+  ## Vedlikehold
+  - Sølv: polér med anti-tarnish-duk
+  - Gull-filled: vask mildt med såpevann
+  - Perler: tørk av etter bruk, oppbevar separat
+  - Oppbevar i lukket pose for å redusere oksidasjon
+
+  ## Tagg-forslag
+  `sterlingsolv`, `gull-filled`, `kopper`, `rustfritt-stal`,
+  `wire-wrap`, `chainmail`, `perleveving`, `stringing`,
+  `halskjede`, `armband`, `oredobber`, `ring`, `brosje`,
+  `glassperler`, `edelstein`, `krystall`, `ferskvannsperle`,
+  `julegave`, `bestilt`, `hypoallergen`, `unike`,
+  `nybegynner`, `avansert`
+
+  ## Rules
+  - Bruk norsk fag-terminologi (sterlingsølv, tråd-tykkelse, findings)
+  - For størrelser: bruk metrisk (mm) primært, gauge sekundært
+  - Understrek hypoallergene for øredobber
+  - Ikke gi verdi-vurderinger på smykker — fokus på håndverk og materialer
+  - Respekter Ronjas egne preferanser i "Mine notater"

@@ -1,0 +1,156 @@
+name: bakgrunns-effekter
+description: Animated background effects — gradients, particles, glows per hobby
+version: 1.0.0
+tags: [design, background, animation, gradient]
+
+instructions: |
+  # Bakgrunns-effekter — Animert bakgrunn
+
+  ## Mål
+  Gi sidene atmosfære uten å distrahere fra innholdet. Subtil bevegelse som føles levende.
+
+  ## Tre hovedvarianter
+
+  ### 1. Animert gradient (forside / /start)
+  Sakte skiftende mellom lilla, turkis og lyseblå.
+  ```css
+  .bg-aurora {
+    background: linear-gradient(
+      135deg,
+      hsl(270, 70%, 20%) 0%,
+      hsl(210, 60%, 25%) 35%,
+      hsl(180, 65%, 30%) 70%,
+      hsl(270, 70%, 20%) 100%
+    );
+    background-size: 300% 300%;
+    animation: aurora 25s ease-in-out infinite;
+  }
+
+  @keyframes aurora {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bg-aurora { animation: none; background-position: 0% 50%; }
+  }
+  ```
+
+  ### 2. Partikler / støv (hobby-sider)
+  **Lys**: Svake lilla "blomsterblad" som driver sakte ned.
+  **Smykker**: Glitter-partikler som flyter og glimter.
+
+  Bruk SVG/canvas i en dedikert komponent:
+  ```tsx
+  'use client';
+  export function FloatingParticles({ hobby }: Props) {
+    const reducedMotion = useReducedMotion();
+    if (reducedMotion) return null;
+
+    const count = 15; // ikke overvelde
+    return (
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        {Array.from({ length: count }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: '-5%',
+            }}
+            animate={{
+              y: ['0vh', '110vh'],
+              x: [0, Math.random() * 100 - 50],
+              opacity: [0, 0.6, 0],
+            }}
+            transition={{
+              duration: 20 + Math.random() * 10,
+              delay: i * 2,
+              repeat: Infinity,
+              ease: 'linear',
+            }}
+          >
+            {hobby === 'lys' ? <Flower /> : <Sparkle />}
+          </motion.div>
+        ))}
+      </div>
+    );
+  }
+  ```
+
+  ### 3. Pulserende glød (post-detalj bakgrunn)
+  Svak "lys"-effekt bak hovedbildet som pulserer sakte.
+  ```css
+  .bg-glow {
+    background: radial-gradient(
+      circle at 50% 30%,
+      var(--color-glow) 0%,
+      transparent 60%
+    );
+    animation: pulse-glow 8s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.9; }
+  }
+  ```
+
+  ## Per side
+
+  | Side | Bakgrunn |
+  |---|---|
+  | `/` | Nøytral lys (lyseblå tint), ingen animasjon |
+  | `/start` | Dyp aurora-gradient, svake stjerner |
+  | `/lys/*` | Varm lilla glød, flytende blomsterblad (15 stk) |
+  | `/smykker/*` | Kjølig turkis, glitter-partikler (15 stk) |
+  | Admin | Nøytral, ingen effekter (fokus) |
+
+  ## Stjerner (for /start)
+  ```tsx
+  export function StarField({ count = 50 }: Props) {
+    const stars = useMemo(() => Array.from({ length: count }, () => ({
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 2 + 0.5,
+      delay: Math.random() * 5,
+    })), [count]);
+
+    return (
+      <div className="fixed inset-0 pointer-events-none">
+        {stars.map((star, i) => (
+          <div
+            key={i}
+            className="absolute bg-white rounded-full animate-twinkle"
+            style={{
+              left: `${star.x}%`,
+              top: `${star.y}%`,
+              width: `${star.size}px`,
+              height: `${star.size}px`,
+              animationDelay: `${star.delay}s`,
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+  ```
+
+  ## Performance
+  - Partikler: maks 15-20 på skjermen samtidig
+  - Bruk `will-change: transform` kun når du faktisk animerer
+  - `pointer-events-none` på alle bakgrunns-elementer
+  - Lazy-load partikler med `useEffect` (unngå SSR-overhead)
+  - Respekter `prefers-reduced-motion`
+
+  ## Akseptansekriterier
+  - Bakgrunn har subtil bevegelse som ikke distraherer
+  - Per-hobby tema fungerer (blomster for lys, glitter for smykker)
+  - Reduced motion gir statisk bakgrunn
+  - Ikke mer enn 5% CPU-bruk i hvile
+
+  ## Rules
+  - Partikler må være `pointer-events-none` og `-z-10` (bak innhold)
+  - Alle animasjoner > 500ms skal respektere reduced-motion
+  - Ikke kombiner 3+ bakgrunnseffekter på én side
+  - Test på mobil — mange enheter sliter med for tung bakgrunn

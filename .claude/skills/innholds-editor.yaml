@@ -1,0 +1,140 @@
+name: innholds-editor
+description: Tiptap-based rich text editor for creating and editing posts
+version: 1.0.0
+tags: [editor, tiptap, content, admin]
+
+instructions: |
+  # Innholds-editor — Tiptap rich text
+
+  ## Mål
+  Gjør det enkelt for admin å skrive innlegg med tekst, bilder, headinger, lister, og formatting.
+
+  ## Stack
+  - `@tiptap/react` + `@tiptap/starter-kit`
+  - `@tiptap/extension-image` for inline bilder
+  - Custom extensions for galleri, tagger, etc. senere
+
+  ## Oppsett
+
+  ### Basis-editor
+  ```tsx
+  // src/components/editor/PostEditor.tsx
+  'use client';
+  import { useEditor, EditorContent } from '@tiptap/react';
+  import StarterKit from '@tiptap/starter-kit';
+  import Image from '@tiptap/extension-image';
+
+  export function PostEditor({ initialContent, onChange }: Props) {
+    const editor = useEditor({
+      extensions: [
+        StarterKit,
+        Image.configure({
+          HTMLAttributes: { class: 'rounded-lg my-4' },
+        }),
+      ],
+      content: initialContent,
+      onUpdate: ({ editor }) => onChange(editor.getJSON()),
+      editorProps: {
+        attributes: {
+          class: 'prose max-w-none focus:outline-none min-h-[400px]',
+        },
+      },
+    });
+
+    return (
+      <div className="border rounded-lg">
+        <Toolbar editor={editor} />
+        <EditorContent editor={editor} />
+      </div>
+    );
+  }
+  ```
+
+  ### Toolbar
+  Minimalistisk: Fet, Kursiv, H2, H3, Liste, Nummerert liste, Sitat, Link, Bilde.
+  Bilde-knapp åpner filvelger → `uploadPostImage()` → setter inn URL.
+
+  ## Post-opprettelsesflyt
+  `/admin/ny?hobby=lys`:
+  1. Form: Tittel (required), Cover-bilde (valgfritt, drag-and-drop), Editor
+  2. Tagger (autosuggest fra eksisterende + mulighet for ny)
+  3. Utkast lagres auto hvert 10. sekund (se `utkast-lagring`)
+  4. Knapper: "Lagre som utkast" / "Publiser"
+  5. Slug auto-genereres fra tittel, kan redigeres manuelt
+
+  ## Server Action (lagre)
+  ```typescript
+  'use server';
+  import { requireAdmin } from '@/lib/auth/roles';
+  import { postSchema } from '@/lib/validators/post';
+
+  export async function savePost(input: unknown) {
+    const session = await requireAdmin();
+    const data = postSchema.parse(input);
+
+    const slug = data.slug || slugify(data.title);
+
+    if (data.id) {
+      await db.update(posts).set({
+        title: data.title,
+        slug,
+        hobby: data.hobby,
+        content: JSON.stringify(data.content),
+        coverImageUrl: data.coverImageUrl,
+        excerpt: data.excerpt,
+        published: data.published,
+        publishedAt: data.published ? new Date() : null,
+        updatedAt: new Date(),
+      }).where(eq(posts.id, data.id));
+    } else {
+      await db.insert(posts).values({
+        title: data.title,
+        slug,
+        hobby: data.hobby,
+        content: JSON.stringify(data.content),
+        authorId: session.user.id,
+        published: data.published,
+        publishedAt: data.published ? new Date() : null,
+      });
+    }
+
+    revalidatePath(`/${data.hobby}`);
+    revalidatePath(`/${data.hobby}/${slug}`);
+  }
+  ```
+
+  ## Validering (Zod)
+  ```typescript
+  // src/lib/validators/post.ts
+  import { z } from 'zod';
+
+  export const postSchema = z.object({
+    id: z.string().optional(),
+    title: z.string().min(3).max(200),
+    slug: z.string().regex(/^[a-z0-9-]+$/).optional(),
+    hobby: z.enum(['lys', 'smykker']),
+    content: z.any(), // Tiptap JSON
+    coverImageUrl: z.string().url().optional(),
+    excerpt: z.string().max(300).optional(),
+    published: z.boolean(),
+    tagIds: z.array(z.string()).default([]),
+  });
+  ```
+
+  ## Forhåndsvisning
+  Knapp "Forhåndsvis" åpner innlegget i ny fane: `/<hobby>/<slug>?preview=true`.
+  Preview-mode renderer selv om `published = false` (krever admin-auth).
+
+  ## Akseptansekriterier
+  - Kan skrive tekst med formatting
+  - Kan laste opp bilder inline i teksten
+  - Utkast lagres automatisk
+  - Slug auto-genereres men kan overstyres
+  - Publiser/utkast-toggle fungerer
+  - Validering stopper tomme/ugyldige innlegg
+
+  ## Rules
+  - All innhold lagres som Tiptap JSON (ikke HTML-string) for fleksibilitet
+  - Validér ALLTID med Zod før DB-skriving
+  - Bildeopplastinger går via `vercel-blob-bilder` skill
+  - revalidatePath etter hver lagring så public sider oppdateres

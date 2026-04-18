@@ -1,0 +1,123 @@
+name: qa-hobby-wiki
+description: Quality gate checklist before features go live — a11y, perf, design, security
+version: 1.0.0
+tags: [quality, qa, checklist, review]
+
+instructions: |
+  # QA — Kvalitetssjekk før lansering
+
+  ## Mål
+  En sjekkliste som går gjennom før nye funksjoner merges til `main`. Fanger tidlig ting som ellers slipper ut.
+
+  ## Sjekkliste per funksjon
+
+  ### ✅ Funksjonalitet
+  - [ ] Funksjonen gjør det spec-en sier (sjekk mot skill-instruksjonene)
+  - [ ] Alle akseptansekriterier i skill møtt
+  - [ ] Edge cases håndtert (tom liste, manglende data, nettverksfeil)
+  - [ ] Feilmeldinger er klare og hjelpsomme
+
+  ### ✅ Sikkerhet
+  - [ ] Alle Server Actions starter med `requireAdmin()` hvis de muterer
+  - [ ] User input validert med Zod
+  - [ ] Ingen hemmeligheter i klient-bundle (sjekk `.env.local` ikke committet)
+  - [ ] SQL-injection umulig (parametrisert queries via Drizzle)
+  - [ ] XSS-sikret (ingen `dangerouslySetInnerHTML` med bruker-input)
+
+  ### ✅ Tilgjengelighet
+  - [ ] Navigerbar med kun tastatur
+  - [ ] Fokus-outline synlig
+  - [ ] Alle ikoner har `aria-label` eller synlig tekst
+  - [ ] Alle bilder har `alt`-tekst
+  - [ ] Kontrast minst 4.5:1 for brødtekst, 3:1 for UI
+  - [ ] Skjermleser leser innhold i logisk rekkefølge
+  - [ ] `prefers-reduced-motion` respekteres
+
+  ### ✅ Responsivt
+  - [ ] Fungerer på 320px bredde
+  - [ ] Ingen horisontal scroll
+  - [ ] Touch-targets minst 44×44px
+  - [ ] Tekst lesbar på alle viewporter
+  - [ ] Testet på mobil + desktop
+
+  ### ✅ Ytelse
+  - [ ] Lighthouse Performance > 90
+  - [ ] LCP (Largest Contentful Paint) < 2.5 s
+  - [ ] CLS (Cumulative Layout Shift) < 0.1
+  - [ ] Bilder har `width`/`height` for å unngå layout shift
+  - [ ] Bilder komprimert til WebP (< 500 kB)
+  - [ ] Ingen unødvendige re-renders (React DevTools Profiler)
+
+  ### ✅ SEO (hvis public side)
+  - [ ] Unik `title` og `description`
+  - [ ] OG-bilde satt for deling
+  - [ ] Sitemap inkluderer siden
+  - [ ] Canonical URL korrekt
+
+  ### ✅ Design
+  - [ ] Matcher `design-system` skill (farger, spacing, typografi)
+  - [ ] Hobby-aksent brukes konsekvent (lilla/turkis)
+  - [ ] Animasjoner er subtile og hensiktsmessige
+  - [ ] Empty-states har illustrasjon + tekst + handling
+  - [ ] Loading-tilstander (skeleton eller animasjon)
+
+  ### ✅ Innhold (tekst)
+  - [ ] Norsk, nøytralt og tydelig
+  - [ ] Ingen engelske fraser som har naturlig norsk oversettelse
+  - [ ] Inverted pyramid (viktig info først)
+  - [ ] Bullet-lister har parallell struktur
+  - [ ] Unngå filler-ord: "veldig", "enables", "utilize"
+
+  ### ✅ Testing
+  - [ ] Enhetstester for ny logikk
+  - [ ] E2E for kritisk flyt
+  - [ ] Alle tester går grønt
+  - [ ] Coverage ikke redusert
+
+  ### ✅ Browser-kompatibilitet
+  - [ ] Chrome (siste)
+  - [ ] Safari (siste + iOS)
+  - [ ] Firefox (siste)
+  - [ ] Edge (siste)
+
+  ### ✅ Git
+  - [ ] Commit-meldinger beskriver *hvorfor*, ikke bare *hva*
+  - [ ] Ingen `console.log` igjen i koden
+  - [ ] Ingen `TODO` uten issue
+  - [ ] `.env*` ikke committet
+
+  ## Automatisert sjekk
+  ```bash
+  npm run lint       # ESLint
+  npm run typecheck  # TypeScript
+  npm test           # Vitest
+  npm run test:e2e   # Playwright
+  ```
+
+  ## Manuell sjekk (5 minutter)
+  1. Åpne `/` — laster raskt, ser bra ut?
+  2. Gå til `/start`, klikk pill → rett til hobby-side?
+  3. Åpne et innlegg — bilde, tekst, tagger?
+  4. Søk etter noe — resultater vises?
+  5. Tab-naviger gjennom siden — kan nå alt?
+  6. Aktiver reduced motion — animasjoner stopper?
+  7. Mobilvisning — alt fungerer?
+
+  ## Før produksjonsdeploy
+  - [ ] Alle ovenfor bestått
+  - [ ] Preview-deploy testet med ekte data
+  - [ ] Database-migrering kjørt (hvis schema endret)
+  - [ ] Env vars oppdatert (hvis nye)
+  - [ ] Backup tatt (Neon har auto-branching)
+
+  ## Post-deploy
+  - [ ] Åpne prod-URL, verifiser at ny funksjon fungerer
+  - [ ] Sjekk Vercel Analytics for errors
+  - [ ] Test innlogging
+  - [ ] Test et innlegg-opprett
+
+  ## Rules
+  - Aldri merge rødt CI
+  - Aldri hopp over tilgjengelighet-sjekk
+  - Sikkerhetssjekk er non-negotiable
+  - Hvis tvil: be noen andre om "second pair of eyes"

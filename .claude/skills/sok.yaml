@@ -1,0 +1,116 @@
+name: sok
+description: Full-text search across posts with Postgres tsvector
+version: 1.0.0
+tags: [search, postgres, ui, fulltext]
+
+instructions: |
+  # Søk — Full-text search
+
+  ## Mål
+  Besøkende kan søke etter innlegg på tvers av tittel, tekst, og tagger.
+  Admin har utvidet søk i admin-panel (inkluderer utkast).
+
+  ## Strategi
+  Bruk Postgres innebygde full-text search via `tsvector` og `tsquery`.
+  Ingen eksterne tjenester (Algolia, Meilisearch) — holder det enkelt og gratis.
+
+  ## Database
+  Legg til en generert kolonne for søke-indeksen:
+  ```sql
+  ALTER TABLE posts ADD COLUMN search_vector tsvector
+    GENERATED ALWAYS AS (
+      setweight(to_tsvector('norwegian', coalesce(title, '')), 'A') ||
+      setweight(to_tsvector('norwegian', coalesce(excerpt, '')), 'B') ||
+      setweight(to_tsvector('norwegian', coalesce(content, '')), 'C')
+    ) STORED;
+
+  CREATE INDEX posts_search_idx ON posts USING GIN (search_vector);
+  ```
+
+  I Drizzle:
+  ```typescript
+  import { sql } from 'drizzle-orm';
+
+  // Raw query med parametrisert input for sikkerhet
+  export async function searchPosts(query: string, hobby?: Hobby) {
+    const tsQuery = query.trim().split(/\s+/).join(' & ');
+
+    return db.execute(sql`
+      SELECT p.*, ts_rank(search_vector, to_tsquery('norwegian', ${tsQuery})) AS rank
+      FROM posts p
+      WHERE search_vector @@ to_tsquery('norwegian', ${tsQuery})
+        AND published = true
+        ${hobby ? sql`AND hobby = ${hobby}` : sql``}
+      ORDER BY rank DESC
+      LIMIT 30
+    `);
+  }
+  ```
+
+  ## Søke-UI
+
+  ### Søkeknapp i header
+  Lite ikon (forstørrelsesglass). Klikk åpner søke-modal eller expandering.
+
+  ### Søke-modal
+  ```tsx
+  'use client';
+  export function SearchModal() {
+    const [query, setQuery] = useState('');
+    const [results, setResults] = useState<Post[]>([]);
+    const [loading, setLoading] = useState(false);
+
+    useDebouncedEffect(() => {
+      if (query.length < 2) { setResults([]); return; }
+      setLoading(true);
+      searchAction(query).then(setResults).finally(() => setLoading(false));
+    }, [query], 300);
+
+    return (
+      <Dialog>
+        <Input autoFocus value={query} onChange={...} placeholder="Søk etter innlegg..." />
+        {loading && <LoadingWaxDrip />}
+        {results.length > 0 && <ResultsList results={results} />}
+        {!loading && query.length >= 2 && results.length === 0 && (
+          <EmptyState illustration="broken-chain" message="Ingen treff" />
+        )}
+      </Dialog>
+    );
+  }
+  ```
+
+  ### Dedikert søke-side
+  `/sok?q=...&hobby=...` — full side med paginerte resultater, filter, sortering.
+
+  ## Keyboard shortcut
+  `Cmd+K` / `Ctrl+K` åpner søke-modal fra hvor som helst.
+
+  ## Highlighting
+  Marker treff i tittel/excerpt:
+  ```typescript
+  export async function searchWithHighlight(query: string) {
+    return db.execute(sql`
+      SELECT
+        p.*,
+        ts_headline('norwegian', p.excerpt, to_tsquery('norwegian', ${tsQuery})) AS highlighted_excerpt
+      FROM posts p
+      WHERE ...
+    `);
+  }
+  ```
+
+  ## Tag-søk
+  Hvis bruker skriver `#nybegynner` i søkeboksen, tolkes det som tag-filter.
+
+  ## Akseptansekriterier
+  - Søk returnerer relevante resultater på 2+ tegn
+  - Tittel-treff rangeres over innhold-treff
+  - Norske ord matcher (bruker norwegian text search config)
+  - Cmd+K åpner søk
+  - Tom søk viser empty state
+
+  ## Rules
+  - Kun `published = true` i offentlig søk
+  - Debounce input (300ms) så vi ikke bombarderer DB
+  - Parametrisert input — ALDRI string concat i SQL
+  - `ts_query`-input skal kjøres gjennom `.split(/\s+/).join(' & ')` for "AND"-søk

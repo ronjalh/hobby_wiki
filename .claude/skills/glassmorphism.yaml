@@ -1,0 +1,109 @@
+name: glassmorphism
+description: Translucent cards with blur effects — subtle glass aesthetic
+version: 1.0.0
+tags: [design, visual-effects, glass, blur]
+
+instructions: |
+  # Glassmorphism — Glasseffekt med blur
+
+  ## Mål
+  Subtile, gjennomsiktige kort med blur-bakgrunn som gir dybde og modernitet uten å bli masete.
+
+  ## Kjerneoppskrift
+  ```css
+  .glass {
+    background: hsla(0, 0%, 100%, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid hsla(0, 0%, 100%, 0.15);
+    border-radius: 16px;
+  }
+  ```
+
+  ## Varianter
+
+  ### Light glass (på farget/bilde-bakgrunn)
+  ```css
+  .glass-light {
+    background: hsla(0, 0%, 100%, 0.15);
+    backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid hsla(0, 0%, 100%, 0.25);
+  }
+  ```
+
+  ### Dark glass (på lys bakgrunn)
+  ```css
+  .glass-dark {
+    background: hsla(0, 0%, 10%, 0.4);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsla(0, 0%, 100%, 0.1);
+    color: white;
+  }
+  ```
+
+  ### Tintet glass (hobby-aksent)
+  ```css
+  [data-hobby="lys"] .glass-tinted {
+    background: hsla(270, 80%, 60%, 0.1);
+    backdrop-filter: blur(14px);
+    border: 1px solid hsla(270, 80%, 70%, 0.2);
+  }
+  ```
+
+  ## Bruksområder
+  - **Post-kort på gallerier** — subtilt løft over bakgrunnen
+  - **Sticky header** — bevarer lesbarhet over varierende innhold
+  - **Modal/dialog overlay** — dybde uten hard bakgrunn
+  - **Filter-chips** — mykhet
+  - **Sidebar på post-detalj**
+
+  ## Regler for bruk
+
+  ### Når glass fungerer
+  - Bakgrunnen har farge/bilde (ellers blir effekten usynlig)
+  - Kortet har minst 12px padding (plass til effekten)
+  - Kortet er over en annen kilde til visuell interesse
+
+  ### Når det IKKE fungerer
+  - Hvit/flat bakgrunn — blir usynlig og bare skaper ekstra gjengivelse
+  - Mye tekst i kortet — lesbarhet lider
+  - Små elementer — blur-effekten forsvinner
+
+  ## Performance
+  - `backdrop-filter` er GPU-tungt — unngå på sider med 20+ elementer
+  - På mobil: redusér blur-verdi eller fjern på `prefers-reduced-motion` (valgfritt)
+  - Test på iOS Safari (har hatt quirks historisk)
+
+  ## Tailwind-klasser (custom utilities)
+  Legg til i `globals.css`:
+  ```css
+  @utility glass {
+    background: hsla(0, 0%, 100%, 0.08);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsla(0, 0%, 100%, 0.15);
+  }
+  @utility glass-tinted {
+    background: hsla(from var(--color-accent) h s l / 0.1);
+    backdrop-filter: blur(14px);
+    border: 1px solid hsla(from var(--color-accent) h s l / 0.2);
+  }
+  ```
+
+  ## Kontrast
+  **Viktig**: Tekst på glass må ha AA-kontrast. Hvis bakgrunnen varierer, bruk:
+  ```css
+  text-shadow: 0 1px 2px hsla(0, 0%, 0%, 0.3);
+  ```
+  Eller gjør kortet mer opaqt.
+
+  ## Akseptansekriterier
+  - Glass-kort ser elegant ut over farget/bilde-bakgrunn
+  - Tekst i kort har god kontrast
+  - Fungerer i iOS Safari, Chrome, Firefox
+  - Ytelse aksepabel med 12+ kort på skjermen
+
+  ## Rules
+  - Maks 2 nivåer med blur på samme skjerm (ikke blur-på-blur)
+  - Bruk alltid med `-webkit-backdrop-filter` for eldre Safari-støtte
+  - Fallback for nettlesere uten support: heller litt opaque bakgrunn
+  - Ikke kombiner glass med tung skygge — ett eller annet

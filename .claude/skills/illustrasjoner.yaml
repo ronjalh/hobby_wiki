@@ -1,0 +1,180 @@
+name: illustrasjoner
+description: Custom SVG illustrations — broken chain, extinguished candle, flowers
+version: 1.0.0
+tags: [design, svg, illustrations, assets]
+
+instructions: |
+  # Illustrasjoner — Egne SVG-figurer
+
+  ## Mål
+  Håndlagde (eller brukerspesifikke) SVG-illustrasjoner som gir siden visuell identitet.
+
+  ## Illustrasjoner som trengs
+  1. **Brutt kjede** — for smykke-404/empty states
+  2. **Avslukket lys** — for lys-404/empty states
+  3. **Visnet blomst** — generell feil/empty
+  4. **Lilla blomst** — hover-effekt på kort, dekorasjon
+  5. **Flamme** — ankomst-animasjon for lys-siden
+  6. **Perle-kjede** — ankomst-animasjon for smykker
+  7. **Logo** — enkel ordmerke eller monogram
+  8. **Favicon** — 32×32
+
+  ## Format og oppbygging
+
+  ### SVG-konvensjoner
+  - `viewBox` alltid satt (f.eks. `"0 0 100 100"`)
+  - Bruk `currentColor` for fill/stroke der det skal adaptere til farge-aksent
+  - Ingen hardkodet størrelse — settes av parent via `className`
+  - Navigerbar: `<title>` og `<desc>` for tilgjengelighet
+
+  ### Mal-komponent
+  ```tsx
+  // src/components/illustrations/BrokenChain.tsx
+  export function BrokenChain({ className }: { className?: string }) {
+    return (
+      <svg
+        viewBox="0 0 200 200"
+        fill="none"
+        className={className}
+        role="img"
+        aria-label="Brutt kjede"
+      >
+        <title>Brutt kjede</title>
+        <g stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+          {/* Første halvdel av kjeden */}
+          <circle cx="40" cy="80" r="15" />
+          <circle cx="70" cy="100" r="15" />
+          <circle cx="95" cy="90" r="15" />
+
+          {/* Brudd (visuell gap) */}
+
+          {/* Andre halvdel */}
+          <circle cx="130" cy="110" r="15" transform="rotate(15 130 110)" />
+          <circle cx="160" cy="120" r="15" />
+
+          {/* Små "fallende" partikler mellom */}
+          <circle cx="105" cy="105" r="2" fill="currentColor" />
+          <circle cx="115" cy="115" r="1.5" fill="currentColor" />
+        </g>
+      </svg>
+    );
+  }
+  ```
+
+  ### Avslukket lys
+  ```tsx
+  export function ExtinguishedCandle({ className }: Props) {
+    return (
+      <svg viewBox="0 0 100 200" className={className} role="img" aria-label="Avslukket lys">
+        <title>Avslukket lys</title>
+        <g fill="currentColor">
+          {/* Lys-kropp */}
+          <rect x="35" y="60" width="30" height="120" rx="4" opacity="0.8" />
+
+          {/* Veke */}
+          <rect x="48" y="50" width="4" height="12" />
+
+          {/* Røyk (kurver) */}
+          <path
+            d="M 50 48 Q 45 40 50 30 Q 55 20 50 10"
+            stroke="currentColor"
+            strokeWidth="2"
+            fill="none"
+            opacity="0.4"
+          />
+          <path
+            d="M 52 46 Q 58 36 52 26"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            fill="none"
+            opacity="0.3"
+          />
+        </g>
+      </svg>
+    );
+  }
+  ```
+
+  ### Lilla blomst (hover-effekt)
+  5 kronblader rundt en sentrum-sirkel, lys lilla med mørkere senter.
+  ```tsx
+  export function PurpleFlower({ className }: Props) {
+    return (
+      <svg viewBox="0 0 40 40" className={className} role="img" aria-hidden="true">
+        <g transform="translate(20, 20)">
+          {[0, 72, 144, 216, 288].map((angle) => (
+            <ellipse
+              key={angle}
+              cx="0"
+              cy="-10"
+              rx="5"
+              ry="8"
+              fill="var(--color-lys-400)"
+              transform={`rotate(${angle})`}
+            />
+          ))}
+          <circle r="4" fill="var(--color-lys-700)" />
+        </g>
+      </svg>
+    );
+  }
+  ```
+
+  ### Glitter-sparkle (smykker)
+  ```tsx
+  export function Sparkle({ className }: Props) {
+    return (
+      <svg viewBox="0 0 20 20" className={className} role="img" aria-hidden="true">
+        <path
+          d="M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8 Z"
+          fill="var(--color-smykker-300)"
+        />
+      </svg>
+    );
+  }
+  ```
+
+  ### Flamme (ankomst)
+  ```tsx
+  export function Flame({ className }: Props) {
+    return (
+      <svg viewBox="0 0 60 100" className={className} role="img" aria-label="Flamme">
+        <path
+          d="M30 90 Q15 70 20 45 Q25 25 30 15 Q35 25 40 45 Q45 70 30 90 Z"
+          fill="url(#flame-gradient)"
+        />
+        <defs>
+          <linearGradient id="flame-gradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--color-lys-200)" />
+            <stop offset="50%" stopColor="var(--color-lys-500)" />
+            <stop offset="100%" stopColor="var(--color-lys-700)" />
+          </linearGradient>
+        </defs>
+      </svg>
+    );
+  }
+  ```
+
+  ## Lagring og bruk
+  - Alle SVG-komponenter i `src/components/illustrations/`
+  - Eksport fra `index.ts` for enkel import
+  - Bruk med Tailwind: `<BrokenChain className="w-32 h-32 text-[var(--color-smykker-500)]" />`
+
+  ## Figma-workflow (senere, valgfritt)
+  1. Design i Figma
+  2. Eksporter som SVG
+  3. Kjør gjennom SVGO (eller SVGOMG) for å rense/optimalisere
+  4. Wrap i React-komponent som over
+  5. Bytt `fill="#abc"` med `currentColor` eller CSS-variabel
+
+  ## Akseptansekriterier
+  - Alle illustrasjoner har `role="img"` og `aria-label` eller `aria-hidden`
+  - Farger via `currentColor` eller CSS-variabler (bytter per hobby)
+  - SVG er minimalistiske (< 5 kB etter optimalisering)
+  - Skalerer uten kvalitetstap
+
+  ## Rules
+  - Ingen inline `<img>` for ikoner — alltid SVG-komponent
+  - `viewBox` påkrevd — aldri fast width/height attribut
+  - Semantisk alt-text eller `aria-hidden="true"` for dekorative
+  - Unngå filter-effekter i SVG (dyrt å rendere)

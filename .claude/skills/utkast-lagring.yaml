@@ -1,0 +1,112 @@
+name: utkast-lagring
+description: Auto-save drafts while writing posts to prevent work loss
+version: 1.0.0
+tags: [editor, drafts, autosave]
+
+instructions: |
+  # Utkast-lagring — Aldri mist arbeid
+
+  ## Mål
+  Mens admin skriver et innlegg, lagres endringene automatisk. Ved krasj, nettverksfeil eller utilsiktet navigasjon kan arbeidet gjenopprettes.
+
+  ## Strategi
+  - **Server-side drafts table** (primær) — lagres hvert 10. sekund ved endring
+  - **localStorage fallback** — hvis nettverket er nede, lagres lokalt
+  - Ved editor-åpning: sjekk om det finnes utkast, tilby å fortsette
+
+  ## Database
+  Se `database-schema` for `drafts`-tabellen.
+
+  ## Client-side hook
+  ```typescript
+  // src/hooks/useDraftAutosave.ts
+  'use client';
+  import { useEffect, useRef } from 'react';
+  import { saveDraft } from '@/app/(admin)/admin/actions';
+
+  export function useDraftAutosave({ postId, content, title }: {
+    postId?: string;
+    content: any;
+    title: string;
+  }) {
+    const lastSavedRef = useRef<string>('');
+
+    useEffect(() => {
+      const current = JSON.stringify({ content, title });
+      if (current === lastSavedRef.current) return;
+
+      const timer = setTimeout(async () => {
+        try {
+          await saveDraft({ postId, content, title });
+          lastSavedRef.current = current;
+          localStorage.removeItem(`draft:${postId ?? 'new'}`);
+        } catch {
+          // Fallback til localStorage
+          localStorage.setItem(`draft:${postId ?? 'new'}`, current);
+        }
+      }, 10_000);
+
+      return () => clearTimeout(timer);
+    }, [content, title, postId]);
+  }
+  ```
+
+  ## Server Action
+  ```typescript
+  'use server';
+  import { requireAdmin } from '@/lib/auth/roles';
+  import { db } from '@/db';
+  import { drafts } from '@/db/schema';
+
+  export async function saveDraft({ postId, content, title }: DraftInput) {
+    const session = await requireAdmin();
+
+    const existing = await db.query.drafts.findFirst({
+      where: and(
+        eq(drafts.authorId, session.user.id),
+        postId ? eq(drafts.postId, postId) : isNull(drafts.postId),
+      ),
+    });
+
+    if (existing) {
+      await db.update(drafts)
+        .set({ content: JSON.stringify(content), title, savedAt: new Date() })
+        .where(eq(drafts.id, existing.id));
+    } else {
+      await db.insert(drafts).values({
+        postId: postId ?? null,
+        authorId: session.user.id,
+        content: JSON.stringify(content),
+        title,
+      });
+    }
+  }
+  ```
+
+  ## Gjenopprettings-dialog
+  Når editoren åpnes:
+  1. Last eksisterende innlegg (hvis redigering)
+  2. Sjekk `drafts`-tabellen for upublisert versjon
+  3. Hvis utkast er nyere enn innlegget: dialog "Du har et utkast — fortsett eller forkast?"
+  4. Hvis localStorage-fallback eksisterer: tilbyr gjenoppretting
+
+  ## Status-indikator i UI
+  Liten tekst ved siden av "Publiser"-knapp:
+  - "Lagret kl. 14:23"
+  - "Lagrer..."
+  - "Kunne ikke lagre — lagret lokalt"
+
+  ## Sletting av utkast
+  - Når posten publiseres: slett utkastet
+  - Etter 30 dager uten aktivitet: slett utkastet (senere vedlikeholdsrutine)
+
+  ## Akseptansekriterier
+  - Endring i editor → lagres innen 15 sek
+  - Reload av siden viser den lagrede versjonen
+  - Offline: lagres i localStorage, synkes når online igjen
+  - Dialog tilbyr gjenoppretting hvis utkast finnes
+
+  ## Rules
+  - Lagre kun hvis innhold har endret seg (unngå unødvendige DB-skriv)
+  - Maks ett utkast per (user, post) — ikke en haug
+  - Utkast er per admin (samme innlegg kan ha ulike utkast per forfatter)

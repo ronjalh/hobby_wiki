@@ -1,0 +1,114 @@
+name: database-schema
+description: PostgreSQL schema for posts, users, images, tags via Drizzle ORM
+version: 1.0.0
+tags: [database, drizzle, schema, postgres]
+
+instructions: |
+  # Database Schema — Tabeller og relasjoner
+
+  ## Stack
+  - Drizzle ORM + @neondatabase/serverless (HTTP driver)
+  - Migrations via `drizzle-kit push`
+
+  ## Tabeller
+
+  ### users (fra NextAuth + role)
+  ```typescript
+  export const users = pgTable('users', {
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+    name: text('name'),
+    email: text('email').unique().notNull(),
+    emailVerified: timestamp('emailVerified', { mode: 'date' }),
+    image: text('image'),
+    role: text('role', { enum: ['admin', 'user'] }).notNull().default('user'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  });
+  ```
+
+  ### accounts, sessions, verificationTokens
+  Standard NextAuth-tabeller — opprettes av Drizzle-adapter.
+
+  ### posts
+  ```typescript
+  export const posts = pgTable('posts', {
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+    hobby: text('hobby', { enum: ['lys', 'smykker'] }).notNull(),
+    title: text('title').notNull(),
+    slug: text('slug').notNull(),
+    content: text('content').notNull(), // Tiptap JSON eller HTML
+    excerpt: text('excerpt'),
+    coverImageUrl: text('cover_image_url'),
+    published: boolean('published').notNull().default(false),
+    publishedAt: timestamp('published_at'),
+    authorId: text('author_id').references(() => users.id).notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  }, (t) => ({
+    slugHobbyIdx: uniqueIndex('slug_hobby_idx').on(t.slug, t.hobby),
+    hobbyPublishedIdx: index('hobby_published_idx').on(t.hobby, t.published),
+  }));
+  ```
+
+  ### images
+  ```typescript
+  export const images = pgTable('images', {
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+    postId: text('post_id').references(() => posts.id, { onDelete: 'cascade' }),
+    url: text('url').notNull(),       // Vercel Blob URL
+    width: integer('width'),
+    height: integer('height'),
+    altText: text('alt_text'),
+    sortOrder: integer('sort_order').notNull().default(0),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  });
+  ```
+
+  ### tags og posts_tags
+  ```typescript
+  export const tags = pgTable('tags', {
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+    slug: text('slug').notNull().unique(),
+    label: text('label').notNull(),
+    hobby: text('hobby', { enum: ['lys', 'smykker', 'begge'] }).notNull(),
+  });
+
+  export const postsTags = pgTable('posts_tags', {
+    postId: text('post_id').references(() => posts.id, { onDelete: 'cascade' }).notNull(),
+    tagId: text('tag_id').references(() => tags.id, { onDelete: 'cascade' }).notNull(),
+  }, (t) => ({
+    pk: primaryKey({ columns: [t.postId, t.tagId] }),
+  }));
+  ```
+
+  ### drafts (auto-save)
+  ```typescript
+  export const drafts = pgTable('drafts', {
+    id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+    postId: text('post_id').references(() => posts.id, { onDelete: 'cascade' }),
+    authorId: text('author_id').references(() => users.id).notNull(),
+    content: text('content').notNull(),
+    title: text('title'),
+    savedAt: timestamp('saved_at').defaultNow().notNull(),
+  });
+  ```
+
+  ## Indekser
+  - `slug + hobby` unik (post-slugs unike per hobby)
+  - `hobby + published` for rask filtrering av publiserte innlegg
+  - Full-text-indeks på `posts.title` og `posts.content` (for søk)
+
+  ## Seed
+  Opprett første admin-bruker manuelt etter første Google-innlogging:
+  ```sql
+  UPDATE users SET role = 'admin' WHERE email = 'ronja@totto.org';
+  ```
+
+  ## Akseptansekriterier
+  - Alle tabeller opprettes med `drizzle-kit push`
+  - Foreign keys fungerer (slett en post → cascade sletter images og posts_tags)
+  - Unik index på `(slug, hobby)` stopper duplikater
+
+  ## Rules
+  - Aldri lagre passord (Google OAuth håndterer alt)
+  - Alle FK-er skal ha `onDelete` spesifisert
+  - Nye felter via migrations, aldri direkte SQL i prod

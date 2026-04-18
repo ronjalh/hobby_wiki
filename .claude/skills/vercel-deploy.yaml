@@ -1,0 +1,86 @@
+name: vercel-deploy
+description: Production deployment to Vercel Hobby tier with env vars and domain
+version: 1.0.0
+tags: [deployment, vercel, production]
+
+instructions: |
+  # Vercel Deploy — Produksjon
+
+  ## Mål
+  Få hobby_wiki live på `hobby-wiki.vercel.app` (eller egen domene) med CI/CD fra GitHub.
+
+  ## Oppsett
+
+  ### 1. Koble repo til Vercel
+  - vercel.com → Add New → Project
+  - Import `hobby-wiki` fra GitHub
+  - Framework Preset: Next.js (auto)
+  - Build Command: `npm run build` (standard)
+  - Output Directory: `.next` (standard)
+  - Install Command: `npm install` (standard)
+
+  ### 2. Environment Variables (Vercel Dashboard)
+  Legg inn for **Production, Preview, Development**:
+  ```
+  DATABASE_URL            — fra Neon
+  AUTH_SECRET             — openssl rand -base64 32
+  AUTH_GOOGLE_ID          — fra Google Cloud Console
+  AUTH_GOOGLE_SECRET      — fra Google Cloud Console
+  AUTH_URL                — https://hobby-wiki.vercel.app (prod)
+  BLOB_READ_WRITE_TOKEN   — auto fra Vercel Blob Store
+  ```
+
+  ### 3. Deploy
+  - Push til `main` → auto-deploy produksjon
+  - Push til andre branches → preview deploys med unik URL
+
+  ### 4. Neon produksjonsdatabase
+  - Neon har én "main" branch for prod
+  - Opprett "dev" branch for lokal utvikling (Neon-branches er gratis)
+  - `DATABASE_URL` i Vercel peker til main-branch
+  - `DATABASE_URL` i `.env.local` peker til dev-branch
+
+  ### 5. Første deploy
+  1. Push `main` til GitHub
+  2. Vercel builder og deployer
+  3. Kjør `drizzle-kit push` mot produksjonsdb én gang:
+     ```bash
+     DATABASE_URL=<prod-url> npx drizzle-kit push
+     ```
+  4. Logg inn med Google → opprett bruker-rad
+  5. Manuelt i Neon: `UPDATE users SET role = 'admin' WHERE email = 'ronja@totto.org';`
+
+  ### 6. next.config.ts
+  ```typescript
+  const config = {
+    images: {
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: '*.public.blob.vercel-storage.com',
+        },
+      ],
+    },
+  };
+  export default config;
+  ```
+
+  ### 7. Custom domene (valgfritt, senere)
+  Kjøp fra Namecheap/Domene.no → legg til i Vercel → oppdater DNS.
+
+  ## Overvåking
+  - Vercel Dashboard → Deployments — se build-logs og runtime-errors
+  - Vercel Analytics (gratis) — besøkstall, Core Web Vitals
+  - Vercel Speed Insights — performance-måling
+
+  ## Akseptansekriterier
+  - `hobby-wiki.vercel.app` laster forsiden uten feil
+  - Logging inn med Google funker i prod
+  - Bilder vises via Vercel Blob URL
+  - PR-er får preview URL
+  - Build-tid under 2 min
+
+  ## Rules
+  - Aldri sett secrets i kode — kun via Vercel env vars
+  - Test preview-deploy før merge til `main`
+  - Hvis en build feiler, fiks før neste push

@@ -1,0 +1,115 @@
+name: browse-galleri
+description: Public browsing view — grid/feed of posts for visitors
+version: 1.0.0
+tags: [ui, browse, gallery, masonry]
+
+instructions: |
+  # Browse Galleri — Offentlig bla-visning
+
+  ## Mål
+  Hver hobby-side (`/lys`, `/smykker`) har en "bla gjennom"-visning der besøkende kan utforske innlegg visuelt.
+
+  ## Layout-strategi
+  - **Top av siden**: Bento-grid med fremhevede innlegg (3-6 stk)
+  - **Under**: Masonry-grid med alle innlegg, sortert etter dato (nyeste først)
+  - **Øverst**: Filter- og sorterings-chips (se `filter-sortering`)
+  - **Nederst**: "Last mer"-knapp eller infinite scroll
+
+  ## Masonry-grid
+  ```tsx
+  // src/components/gallery/MasonryGrid.tsx
+  'use client';
+  import { useEffect, useState } from 'react';
+
+  export function MasonryGrid({ posts, hobby }: Props) {
+    return (
+      <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4">
+        {posts.map((post) => (
+          <PostCard key={post.id} post={post} hobby={hobby} className="mb-4 break-inside-avoid" />
+        ))}
+      </div>
+    );
+  }
+  ```
+
+  CSS-kolonner gir enkel masonry uten JS-library. Fungerer perfekt for ulik høyde.
+
+  ## Post-kort (PostCard)
+  ```tsx
+  export function PostCard({ post, hobby }: Props) {
+    return (
+      <Link
+        href={`/${hobby}/${post.slug}`}
+        className="group block overflow-hidden rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:border-accent transition-all"
+      >
+        {post.coverImageUrl && (
+          <Image
+            src={post.coverImageUrl}
+            alt={post.title}
+            width={post.coverImage.width}
+            height={post.coverImage.height}
+            className="w-full group-hover:scale-[1.02] transition-transform"
+          />
+        )}
+        <div className="p-4 relative">
+          <h3 className="font-semibold">{post.title}</h3>
+          <p className="text-sm text-muted mt-1 line-clamp-2">{post.excerpt}</p>
+          <TagList tags={post.tags.slice(0, 2)} size="sm" />
+          <FlowerGrowOnHover />  {/* se animasjoner-bevegelse */}
+        </div>
+      </Link>
+    );
+  }
+  ```
+
+  ## Data-henting
+  ```typescript
+  // src/app/(public)/lys/page.tsx
+  export default async function LysPage({ searchParams }: Props) {
+    const { tag, sort = 'newest', page = '1' } = await searchParams;
+
+    const posts = await db.query.posts.findMany({
+      where: and(
+        eq(posts.hobby, 'lys'),
+        eq(posts.published, true),
+        tag ? exists(...tagFilter(tag)) : undefined,
+      ),
+      orderBy: sort === 'oldest' ? asc(posts.publishedAt) : desc(posts.publishedAt),
+      limit: 20,
+      offset: (parseInt(page) - 1) * 20,
+      with: { tags: true, images: { limit: 1 } },
+    });
+
+    return (
+      <div>
+        <BentoFeatured posts={posts.slice(0, 6)} />
+        <FilterBar hobby="lys" />
+        <MasonryGrid posts={posts} hobby="lys" />
+      </div>
+    );
+  }
+  ```
+
+  ## Paginering
+  - URL-basert: `?page=2` — gjør delbare lenker og SEO-vennlig
+  - Eller "Last mer"-knapp med klient-side infinite scroll (senere)
+
+  ## Tom tilstand
+  Hvis ingen innlegg (f.eks. nytt tag-filter gir 0 resultater):
+  - Brutt kjede (smykker) eller avslukket lys (lys) illustrasjon
+  - Kort tekst: "Ingen innlegg funnet"
+  - "Tilbakestill filtre"-lenke
+  Se `empty-feil-sider` skill.
+
+  ## Akseptansekriterier
+  - Kort er klikkbare og navigerer til post-detalj
+  - Layout tilpasser seg skjermstørrelser (1-4 kolonner)
+  - Kort har hover-effekt (blomst vokser, svak løft)
+  - Filter og sortering påvirker listen
+  - Tom liste viser empty-state
+
+  ## Rules
+  - Kun `published = true` innlegg vises offentlig
+  - Bilder lazy-loades (Next.js `<Image>` gjør dette automatisk)
+  - Alle kort har `aria-label` med post-tittel
+  - Bevar scroll-posisjon ved tilbake-navigasjon

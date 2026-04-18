@@ -1,0 +1,101 @@
+name: project-init
+description: Initial Next.js 15 + Drizzle + Neon + Vercel project setup for hobby_wiki
+version: 1.0.0
+tags: [setup, nextjs, drizzle, neon, vercel]
+
+instructions: |
+  # Project Init — Oppstart av hobby_wiki
+
+  ## Mål
+  Få kjørende Next.js-app med database-tilkobling og deploy-klar Vercel-konfigurasjon.
+
+  ## Steg
+
+  ### 1. Opprett Next.js-app
+  ```bash
+  npx create-next-app@latest hobby_wiki \
+    --typescript --tailwind --app --src-dir --eslint
+  cd hobby_wiki
+  ```
+
+  ### 2. Installer kjerneavhengigheter
+  ```bash
+  # UI og styling
+  npx shadcn@latest init
+  npm install framer-motion lucide-react
+
+  # Database
+  npm install drizzle-orm @neondatabase/serverless
+  npm install -D drizzle-kit
+
+  # Auth
+  npm install next-auth@beta @auth/drizzle-adapter
+
+  # Rich text editor
+  npm install @tiptap/react @tiptap/starter-kit @tiptap/extension-image
+
+  # Skjemaer
+  npm install react-hook-form zod @hookform/resolvers
+
+  # Bilder
+  npm install @vercel/blob sharp
+  ```
+
+  ### 3. Mappestruktur
+  ```
+  src/
+    app/
+      (public)/
+        page.tsx              — Om-siden (/)
+        start/page.tsx        — Pill-valget
+        lys/
+          page.tsx            — Hobby-forside
+          [slug]/page.tsx     — Enkelt innlegg
+        smykker/
+          page.tsx
+          [slug]/page.tsx
+      (admin)/
+        admin/
+          page.tsx            — Dashboard
+          ny/page.tsx         — Nytt innlegg
+          innlegg/[id]/page.tsx
+          brukere/page.tsx
+      api/auth/[...nextauth]/route.ts
+      login/page.tsx
+    components/
+      ui/                     — shadcn komponenter
+      motion/                 — Framer Motion-wrappere
+      editor/                 — Tiptap-komponenter
+    db/
+      schema.ts
+      index.ts
+    lib/
+      auth/
+      blob/
+      utils/
+  ```
+
+  ### 4. Miljøvariabler
+  `.env.local` (aldri committet):
+  ```
+  DATABASE_URL=postgres://...@neon.tech/...
+  AUTH_SECRET=openssl rand -base64 32
+  AUTH_GOOGLE_ID=...
+  AUTH_GOOGLE_SECRET=...
+  BLOB_READ_WRITE_TOKEN=...
+  ```
+
+  ### 5. Git-init + GitHub
+  Se `github-setup` skill.
+
+  ## Akseptansekriterier
+  - `npm run dev` starter server på localhost:3000
+  - TypeScript kompilerer uten feil
+  - Tailwind fungerer (test med `bg-red-500` på en side)
+  - Miljøvariabler leses fra `.env.local`
+  - Mappestruktur matcher planen over
+
+  ## Rules
+  - All UI-tekst på norsk — ingen i18n
+  - TypeScript strict mode på
+  - Ingen `any` i produksjonskode

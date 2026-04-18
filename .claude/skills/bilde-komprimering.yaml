@@ -1,0 +1,117 @@
+name: bilde-komprimering
+description: Automatic image compression and WebP conversion to stay within Vercel Blob 1 GB
+version: 1.0.0
+tags: [images, performance, optimization, sharp]
+
+instructions: |
+  # Bilde-komprimering — Hold Blob under 1 GB
+
+  ## Mål
+  Alle opplastede bilder komprimeres og konverteres til WebP før de lagres.
+  Målstørrelse: < 500 KB per bilde. 1 GB gratis = ~3 000 bilder.
+
+  ## Stack
+  - `sharp` — server-side bildebehandling
+  - WebP-format (støttes av alle moderne nettlesere)
+  - Kjøres i Server Action før `@vercel/blob` upload
+
+  ## Standard-pipeline
+
+  ```typescript
+  // src/lib/blob/optimize.ts
+  import sharp from 'sharp';
+
+  export async function optimizeImage(buffer: Buffer): Promise<{
+    buffer: Buffer;
+    width: number;
+    height: number;
+    size: number;
+  }> {
+    const image = sharp(buffer);
+    const metadata = await image.metadata();
+
+    // Roter basert på EXIF (så portrett-bilder ikke blir liggende)
+    const optimized = await image
+      .rotate()
+      .resize(1600, 1600, {
+        fit: 'inside',
+        withoutEnlargement: true,
+      })
+      .webp({ quality: 82, effort: 4 })
+      .toBuffer();
+
+    const optimizedMetadata = await sharp(optimized).metadata();
+
+    return {
+      buffer: optimized,
+      width: optimizedMetadata.width ?? metadata.width ?? 0,
+      height: optimizedMetadata.height ?? metadata.height ?? 0,
+      size: optimized.length,
+    };
+  }
+  ```
+
+  ## Miniatyrer (valgfritt)
+  For galleri-visning kan vi generere mindre versjoner:
+  ```typescript
+  export async function makeThumbnail(buffer: Buffer): Promise<Buffer> {
+    return sharp(buffer)
+      .resize(400, 400, { fit: 'cover' })
+      .webp({ quality: 70 })
+      .toBuffer();
+  }
+  ```
+
+  Men: Next.js `<Image>` lager automatisk flere størrelser via Vercel Image Optimization.
+  Så vi trenger sannsynligvis ikke egne miniatyrer — bare lagre én godt komprimert versjon.
+
+  ## Parameter-guide
+  | Parameter | Verdi | Hvorfor |
+  |---|---|---|
+  | Maks bredde | 1600px | Balanse mellom kvalitet og størrelse |
+  | Quality | 82 | WebP 82 ser nesten identisk ut som 100 |
+  | Format | WebP | 30-50% mindre enn JPEG, universal støtte |
+  | `withoutEnlargement: true` | — | Ikke forstørre små bilder |
+  | `effort: 4` | 0-6 skala | Raskere enn 6, nesten like bra |
+
+  ## Validering før opplasting
+  ```typescript
+  export function validateImageFile(file: File) {
+    const MAX_INPUT = 15 * 1024 * 1024; // 15 MB input-grense
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+    if (file.size > MAX_INPUT) {
+      throw new Error('Fil er for stor (maks 15 MB)');
+    }
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      throw new Error('Må være JPEG, PNG, WebP eller GIF');
+    }
+  }
+  ```
+
+  ## Overvåking
+  - Vercel Dashboard → Storage → se total bruk av Blob
+  - Hvis nærmer seg 900 MB: varsel i admin-dashboard
+  - Opprett vedlikeholdsrutine som sletter orphan-bilder
+
+  ## Advart-terskel i admin
+  ```typescript
+  // Vises øverst i /admin hvis blob > 80% full
+  export async function getBlobUsage() {
+    const allBlobs = await list(); // @vercel/blob list()
+    const totalBytes = allBlobs.blobs.reduce((sum, b) => sum + b.size, 0);
+    return { bytes: totalBytes, percent: (totalBytes / 1_073_741_824) * 100 };
+  }
+  ```
+
+  ## Akseptansekriterier
+  - Originalbilde på 5 MB blir < 500 KB etter komprimering
+  - EXIF-rotasjon fungerer (portrett-bilder står riktig vei)
+  - WebP brukes for alle lagrede bilder
+  - Admin får varsel når Blob nærmer seg 1 GB
+
+  ## Rules
+  - ALDRI lagre rå-bilder i Blob — alltid komprimer først
+  - Input-grense på klient: 15 MB (visuell feedback med progress bar)
+  - Kvalitet 82 — ikke gå under 75 (synlige artefakter)
+  - Hvis komprimering feiler, vis brukeren feilmelding — aldri stille feil

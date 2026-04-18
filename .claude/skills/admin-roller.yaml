@@ -1,0 +1,112 @@
+name: admin-roller
+description: Role-based access control — admin vs regular user, promote/demote admins
+version: 1.0.0
+tags: [auth, roles, admin, authorization]
+
+instructions: |
+  # Admin Roller — Rollebasert tilgangskontroll
+
+  ## Mål
+  Kun admins kan opprette/redigere/slette innlegg og gjøre andre til admins.
+  Vanlige innloggede brukere har samme tilgang som anonyme besøkende.
+
+  ## Roller
+  - `admin` — full tilgang til admin-panel og innholdsredigering
+  - `user` — standard, kan logge inn men ikke endre innhold
+
+  ## Hjelpefunksjoner
+
+  ```typescript
+  // src/lib/auth/roles.ts
+  import { auth } from './config';
+
+  export async function requireAdmin() {
+    const session = await auth();
+    if (!session?.user) {
+      throw new Error('Ikke innlogget');
+    }
+    if (session.user.role !== 'admin') {
+      throw new Error('Krever admin-tilgang');
+    }
+    return session;
+  }
+
+  export async function isAdmin(): Promise<boolean> {
+    const session = await auth();
+    return session?.user?.role === 'admin';
+  }
+  ```
+
+  ## Forfremme / degradere admins
+  Kun eksisterende admins kan gjøre dette.
+
+  ```typescript
+  // src/app/(admin)/admin/brukere/actions.ts
+  'use server';
+  import { requireAdmin } from '@/lib/auth/roles';
+  import { db } from '@/db';
+  import { users } from '@/db/schema';
+  import { eq, and, not } from 'drizzle-orm';
+
+  export async function promoteToAdmin(userId: string) {
+    const session = await requireAdmin();
+    if (userId === session.user.id) {
+      throw new Error('Du kan ikke endre din egen rolle');
+    }
+    await db.update(users).set({ role: 'admin' }).where(eq(users.id, userId));
+  }
+
+  export async function demoteAdmin(userId: string) {
+    const session = await requireAdmin();
+    if (userId === session.user.id) {
+      throw new Error('Du kan ikke degradere deg selv');
+    }
+
+    // Hindre at siste admin degraderes
+    const adminCount = await db.$count(users, eq(users.role, 'admin'));
+    if (adminCount <= 1) {
+      throw new Error('Må ha minst én admin');
+    }
+
+    await db.update(users).set({ role: 'user' }).where(eq(users.id, userId));
+  }
+  ```
+
+  ## Første admin
+  Etter første Google-innlogging (Ronja), promoteres hun manuelt via Neon SQL:
+  ```sql
+  UPDATE users SET role = 'admin' WHERE email = 'ronja@totto.org';
+  ```
+
+  ## UI-tilstander
+  - `/admin/brukere` viser tabell med alle brukere, rolle, og knapper:
+    - "Gjør til admin" (hvis bruker)
+    - "Fjern admin" (hvis admin, ikke deg selv)
+  - Bekreft med dialog før endring
+  - Suksess/feil-toast etter handling
+
+  ## Middleware + page-level sjekk
+  ```typescript
+  // src/app/(admin)/layout.tsx
+  import { redirect } from 'next/navigation';
+  import { auth } from '@/lib/auth/config';
+
+  export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+    const session = await auth();
+    if (!session?.user) redirect('/login');
+    if (session.user.role !== 'admin') redirect('/');
+    return <>{children}</>;
+  }
+  ```
+
+  ## Akseptansekriterier
+  - Ikke-admins som prøver `/admin` redirectes til `/`
+  - `promoteToAdmin` feiler hvis kaller ikke er admin
+  - `demoteAdmin` feiler hvis det ville fjerne siste admin
+  - Kan ikke degradere seg selv
+
+  ## Rules
+  - ALLE muterende Server Actions må starte med `requireAdmin()`
+  - ALDRI la klient-kode bestemme rolle — kun server-side sjekker
+  - Rolle-endringer logges (vurder audit log senere)
+  - Minst én admin må alltid eksistere

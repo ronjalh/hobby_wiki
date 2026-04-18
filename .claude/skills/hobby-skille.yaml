@@ -1,0 +1,111 @@
+name: hobby-skille
+description: Clear visual and functional separation between lysstøping and smykkelaging
+version: 1.0.0
+tags: [design, routing, content]
+
+instructions: |
+  # Hobby Skille — Tydelig separasjon
+
+  ## Mål
+  Lysstøping og smykkelaging skal føles som to separate verdener, men med konsekvent struktur og navigasjon.
+
+  ## Skille-mekanismer
+
+  ### 1. URL-struktur
+  - `/lys/*` og `/smykker/*` — aldri blandet i samme rute
+  - Post-slugs er unike innenfor én hobby (samme slug kan finnes for lys og smykker)
+
+  ### 2. Farge-aksenter
+  Hver hobby har egne CSS-variabler som overstyrer tema på sine sider:
+  ```css
+  [data-hobby="lys"] {
+    --color-accent: var(--color-lys-500);    /* lilla */
+    --color-accent-light: var(--color-lys-200);
+    --color-accent-dark: var(--color-lys-700);
+    --color-glow: hsla(270, 80%, 60%, 0.3);
+  }
+
+  [data-hobby="smykker"] {
+    --color-accent: var(--color-smykker-500); /* turkis */
+    --color-accent-light: var(--color-smykker-200);
+    --color-accent-dark: var(--color-smykker-700);
+    --color-glow: hsla(180, 70%, 55%, 0.3);
+  }
+  ```
+
+  Layout for hobby-ruter setter `data-hobby="lys"` på `<html>` eller `<body>`:
+  ```tsx
+  // src/app/(public)/lys/layout.tsx
+  export default function LysLayout({ children }: Props) {
+    return <div data-hobby="lys">{children}</div>;
+  }
+  ```
+
+  ### 3. Ikoner
+  - Lys: 🕯️ flamme, voks-drypp, eller custom SVG
+  - Smykker: 💎 perle, krystall, eller custom kjede-ikon
+  Ikoner brukes i:
+  - Sticky header (identifiserer hvilken verden du er i)
+  - Pill-valget på `/start`
+  - Tagger og filter-chips
+
+  ### 4. Typografi-aksent
+  Kan vurdere ulik heading-font per hobby (valgfritt):
+  - Lys: serif (varm, klassisk)
+  - Smykker: elegant sans-serif (skarp, elegant)
+
+  ### 5. Bevegelse
+  Ankomst-animasjon matcher hobby:
+  - Lys: flamme tennes
+  - Smykker: perler bygger kjede
+  Se `animasjoner-bevegelse` skill.
+
+  ## Type-sikker hobby-identifikator
+  ```typescript
+  // src/types/hobby.ts
+  export type Hobby = 'lys' | 'smykker';
+
+  export const HOBBIES: Record<Hobby, {
+    slug: Hobby;
+    label: string;
+    description: string;
+    accentColor: string;
+    icon: LucideIcon;
+  }> = {
+    lys: {
+      slug: 'lys',
+      label: 'Lysstøping',
+      description: 'Håndlagde lys av ulike materialer',
+      accentColor: 'lilla',
+      icon: Flame,
+    },
+    smykker: {
+      slug: 'smykker',
+      label: 'Smykkelaging',
+      description: 'Unike smykker, perler og metall',
+      accentColor: 'turkis',
+      icon: Gem,
+    },
+  };
+  ```
+
+  Bruk denne overalt — aldri hardkod strings.
+
+  ## "Bytte verden" fra en hobby-side
+  Diskret i footer: "→ Besøk smykke-verdenen" / "→ Besøk lys-verdenen".
+  Ikke i hoved-nav. Holder fordypning, men tilgjengelig.
+
+  ## Admin
+  Admin-panel blander begge hobbyer (ikke skille der — det er arbeidsrommet).
+  Hvert innlegg har hobby som påkrevd felt.
+
+  ## Akseptansekriterier
+  - Farge-aksent bytter når du navigerer mellom /lys og /smykker
+  - Ikoner matcher hobby
+  - Ingen innlegg-innhold blandes (en lys-post vises ikke på smykker-siden)
+  - Footer har diskret bytte-lenke
+
+  ## Rules
+  - Bruk alltid `Hobby` union-typen, aldri string literals
+  - CSS-variabler for hobby-aksent — aldri hardkodede farger i komponenter
+  - Ved nye funksjoner, tenk: "Skal dette være per hobby eller felles?"

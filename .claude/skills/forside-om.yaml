@@ -1,0 +1,170 @@
+name: forside-om
+description: Root page (/) — introduction to Ronja and her hobbies, recent posts teaser
+version: 1.0.0
+tags: [landing, forside, about, home]
+
+instructions: |
+  # Forside `/` — Om siden og Ronja
+
+  ## Mål
+  Rolig info-side som:
+  - Introduserer besøkende til nettsiden og Ronja
+  - Viser nyeste innlegg som teaser
+  - Har en tydelig CTA til `/start` (eventyret)
+  - Er SEO-vennlig (Google sender folk hit først)
+
+  ## Innhold (ovenfra og ned)
+
+  ### 1. Hero (kort)
+  - Velkomst-tekst: "Velkommen til [sidenavn]" eller ditt navn
+  - Kort tagline: "Håndlagde lys og smykker — og historien bak hvert stykke"
+  - Bilde: foto av deg eller arbeidet ditt (opplastet som "cover" via admin)
+
+  ### 2. Om meg (2-3 avsnitt)
+  - Hvem er du
+  - Hvordan begynte du med hobbyene
+  - Hva du liker best ved dem
+  - Personlig og varmt, ikke formelt
+
+  ### 3. CTA-blokk
+  - **Hoved-CTA**: "Start eventyret →" — stor knapp til `/start`
+  - **Sekundær**: "Se innlegg direkte" → mini-meny med "Lys" / "Smykker"
+
+  ### 4. Nyeste innlegg (teaser)
+  3-4 kort fra blandet hobby, sortert etter dato.
+
+  ### 5. Footer (felles for hele siden)
+  - Kontakt (email eller sosiale medier, valgfritt)
+  - © år · Ronja
+  - Byttelenke: "→ Besøk lys-verdenen" / "→ Besøk smykke-verdenen"
+
+  ## Implementasjon
+  ```tsx
+  // src/app/(public)/page.tsx
+  import { db } from '@/db';
+  import { posts } from '@/db/schema';
+  import { eq, desc } from 'drizzle-orm';
+  import Link from 'next/link';
+  import Image from 'next/image';
+  import { FadeInOnScroll } from '@/components/motion/FadeInOnScroll';
+
+  export default async function HomePage() {
+    const recentPosts = await db.query.posts.findMany({
+      where: eq(posts.published, true),
+      orderBy: desc(posts.publishedAt),
+      limit: 4,
+      with: { tags: true },
+    });
+
+    return (
+      <main className="container mx-auto px-4 py-12 max-w-5xl">
+        <Hero />
+        <AboutSection />
+        <CtaBlock />
+        <RecentPosts posts={recentPosts} />
+      </main>
+    );
+  }
+
+  function Hero() {
+    return (
+      <section className="py-16 text-center">
+        <h1 className="text-5xl md:text-6xl font-serif mb-4">
+          Ronja sitt hobbyunivers
+        </h1>
+        <p className="text-xl text-muted max-w-2xl mx-auto">
+          Håndlagde lys og smykker — og historien bak hvert stykke
+        </p>
+      </section>
+    );
+  }
+
+  function AboutSection() {
+    return (
+      <FadeInOnScroll>
+        <section className="grid md:grid-cols-[1fr_2fr] gap-8 py-12">
+          <div>
+            {/* TODO: Ronjas profilbilde */}
+            <Image src="/profil.jpg" alt="Ronja" width={300} height={300} className="rounded-full" />
+          </div>
+          <div className="prose">
+            <h2>Om meg</h2>
+            <p>
+              {/* Ronja fyller inn — kort intro om henne selv */}
+            </p>
+            <p>
+              {/* Hvordan hobbyene startet */}
+            </p>
+          </div>
+        </section>
+      </FadeInOnScroll>
+    );
+  }
+
+  function CtaBlock() {
+    return (
+      <FadeInOnScroll>
+        <section className="py-16 text-center">
+          <h2 className="text-3xl font-serif mb-6">Velg hvordan du vil utforske</h2>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/start"
+              className="btn-primary text-lg px-8 py-4 rounded-xl bg-gradient-to-r from-[var(--color-lys-500)] to-[var(--color-smykker-500)]"
+            >
+              Start eventyret →
+            </Link>
+            <div className="flex gap-2 justify-center">
+              <Link href="/lys" className="btn-ghost">Se lysstøping</Link>
+              <Link href="/smykker" className="btn-ghost">Se smykker</Link>
+            </div>
+          </div>
+        </section>
+      </FadeInOnScroll>
+    );
+  }
+
+  function RecentPosts({ posts }: Props) {
+    return (
+      <FadeInOnScroll>
+        <section className="py-12">
+          <h2 className="text-3xl font-serif mb-8">Nyeste innlegg</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {posts.map((post) => (
+              <PostCard key={post.id} post={post} hobby={post.hobby} />
+            ))}
+          </div>
+        </section>
+      </FadeInOnScroll>
+    );
+  }
+  ```
+
+  ## SEO
+  ```tsx
+  export const metadata: Metadata = {
+    title: 'Ronja sitt hobbyunivers — lys og smykker',
+    description: 'Håndlagde lys og smykker. Følg prosessen og historiene bak hvert stykke.',
+    openGraph: {
+      title: 'Ronja sitt hobbyunivers',
+      description: '...',
+      images: ['/og-image.jpg'],
+    },
+  };
+  ```
+
+  ## Bakgrunn
+  Nøytral lyseblå-tinted, ingen tunge animasjoner (dette er SEO-destinasjon).
+  Se `bakgrunns-effekter` — ingen partikler på `/`.
+
+  ## Akseptansekriterier
+  - Hero er lesbar på mobile
+  - Nyeste innlegg hentes dynamisk
+  - CTA til `/start` er tydelig og primær
+  - Side laster raskt (Lighthouse > 95)
+  - SEO-meta er på plass
+
+  ## Rules
+  - Ingen Matrix-drama her — rolig er poenget
+  - Responsive hero (skalerbar font med `clamp()`)
+  - Laste bilder lazy (unntatt hero)
+  - Støtt `prefers-reduced-motion`

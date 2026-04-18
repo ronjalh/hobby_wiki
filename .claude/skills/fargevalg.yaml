@@ -1,0 +1,198 @@
+name: fargevalg
+description: Color theory, semantic colors, associations, harmonies, and consistency
+version: 1.0.0
+tags: [design, color, theory, semantics, accessibility]
+
+instructions: |
+  # Fargevalg — Fargeteori og semantikk
+
+  ## Mål
+  Bruke farger bevisst: konsistent på tvers av siden, semantisk riktig (grønn = suksess, rød = feil), og estetisk harmonisk.
+
+  ## Semantiske farger (konvensjoner)
+
+  Brukerne forventer disse fra ÅRhundre med UI-design. Bryt kun med god grunn.
+
+  ### Standard semantikk
+  | Farge | Betydning | Bruk |
+  |---|---|---|
+  | **Grønn** | Suksess, fremgang, bekreftelse | "Lagret", checkmark, go-knapper |
+  | **Rød** | Feil, fare, slett | Feilmeldinger, destruktive handlinger |
+  | **Gul/orange** | Advarsel, forsiktig | "Utkast", "Ulagrede endringer" |
+  | **Blå** | Info, lenker, tillit | Lenker, info-dialoger, navigasjon |
+  | **Grå** | Deaktivert, nøytral | Disabled knapper, sekundær tekst |
+
+  ### Våre semantiske tokens
+  ```css
+  @theme {
+    --color-success: hsl(142, 70%, 45%);   /* grønn */
+    --color-success-bg: hsl(142, 70%, 95%);
+    --color-success-border: hsl(142, 50%, 75%);
+
+    --color-error: hsl(0, 75%, 50%);        /* rød */
+    --color-error-bg: hsl(0, 80%, 96%);
+    --color-error-border: hsl(0, 60%, 80%);
+
+    --color-warning: hsl(38, 95%, 50%);     /* orange */
+    --color-warning-bg: hsl(38, 100%, 95%);
+
+    --color-info: hsl(210, 80%, 50%);       /* blå */
+    --color-info-bg: hsl(210, 80%, 96%);
+
+    --color-disabled: hsl(0, 0%, 70%);
+    --color-disabled-bg: hsl(0, 0%, 95%);
+  }
+  ```
+
+  Disse er uavhengige av hobby-aksent — rød betyr feil både på lys- og smykke-sider.
+
+  ## Fargeassosiasjoner (kulturelt)
+
+  ### Vårt valg: lilla + turkis
+  - **Lilla**: luksus, kreativitet, mystikk, kongelighet, kunstnerisk
+    - Passer lysstøping (håndverk, estetikk, kreativt uttrykk)
+    - Historisk dyr farge → kvalitet
+  - **Turkis**: ro, klarhet, forfriskende, tillit (mellom grønn og blå)
+    - Passer smykker (elegant, edelstein-assosiasjon, verdi)
+  - **Lyseblå**: tillit, renhet, profesjonalitet — nøytral bakgrunn
+
+  ### Kulturelle hensyn
+  - Vesten: lilla = luksus/royal. Østen: kan bety sorg/død
+  - Hvit: renhet (Vesten) vs. død (noen østlige kulturer)
+  - Side er norsk for norsk publikum — bruk vestlig konvensjon
+
+  ### Farge-assosiasjoner
+  | Farge | Vestlig assosiasjon |
+  |---|---|
+  | Hvit | Renhet, minimalisme, klarhet |
+  | Svart | Eleganse, kraft, formalt |
+  | Rød | Energi, kjærlighet, fare |
+  | Oransje | Varme, energi, vennlighet |
+  | Gul | Lykke, optimisme, advarsel |
+  | Grønn | Natur, helse, vekst, penger |
+  | Blå | Tillit, ro, profesjonalitet |
+  | Lilla | Luksus, kreativitet, mystikk |
+  | Rosa | Feminint, romantikk, lekent |
+  | Brun | Naturlig, varm, rustikk |
+
+  ## Fargeharmoni
+
+  ### Typer
+  - **Komplementær** (motsatte på fargehjulet) — maksimal kontrast, dramatisk
+    - Lilla ↔ Gul
+    - Turkis ↔ Rød-oransje
+  - **Analog** (tre ved siden av hverandre) — harmonisk, rolig
+    - Lilla + blå + turkis (vårt tema!)
+  - **Triadisk** (tre likt fordelt på hjulet) — livlig balansert
+    - Rød + Gul + Blå
+  - **Splittet komplementær** — kontrast men mildere
+    - Lilla + gul-grønn + gul-oransje
+  - **Monokromatisk** (ulike nyanser av én farge) — elegant, enkelt
+
+  ### Vårt tema er analogt
+  Lilla → blå → turkis. Dette gir naturlig harmoni og rolighet. Legg til ett komplementært kraft-punkt (f.eks. varm gul som accent) hvis noe må skille seg ut.
+
+  ## 60-30-10 regelen
+  Klassisk balansering:
+  - **60%** dominant farge (ofte nøytral bakgrunn)
+  - **30%** sekundær farge (seksjoner, kort)
+  - **10%** aksent (knapper, highlights)
+
+  For vår side:
+  - 60% hvit/lyseblå bakgrunn
+  - 30% hobby-aksent (lilla eller turkis)
+  - 10% kontrast-aksent (mørk tekst, eventuell gul accent)
+
+  ## Deaktiverte tilstander (disabled)
+
+  ### Konvensjon
+  Disabled elementer skal se tydelig annerledes ut:
+  - Redusert opacity (30-50%)
+  - Grå farge (nøytral)
+  - `cursor: not-allowed`
+  - Ikke hover-effekt
+  - Fjernet skygge/løft
+
+  ```css
+  .btn:disabled {
+    background: var(--color-disabled-bg);
+    color: var(--color-disabled);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  ```
+
+  ### WCAG og disabled
+  - WCAG 2.2 **unntar** disabled-elementer fra kontrast-krav
+  - MEN: anbefalt å likevel ha 3:1 kontrast for lesbarhet
+  - Ikke så mørke at de ser klikkbare ut — men ikke så lyse at de er usynlige
+
+  ## Konsistens på tvers av sider
+
+  ### Strategier
+  1. **CSS-variabler overalt** — aldri hardkodet hex
+     ```tsx
+     // ❌ IKKE DETTE
+     <button className="bg-[#8844ee]">...</button>
+     // ✅ DETTE
+     <button className="bg-[var(--color-accent)]">...</button>
+     ```
+
+  2. **Design tokens i én fil** — `src/app/globals.css` er sannhetskilden
+
+  3. **Semantiske navn over beskrivende**
+     - `--color-primary` (ikke `--color-lilla`)
+     - `--color-accent` (bytter per hobby automatisk)
+     - `--color-error` (ikke `--color-red`)
+
+  4. **Hobby-aksent via `data-hobby`** — én CSS-regel kontrollerer hele hobby-verdenen
+     ```css
+     [data-hobby="lys"] { --color-accent: var(--color-lys-500); }
+     [data-hobby="smykker"] { --color-accent: var(--color-smykker-500); }
+     ```
+
+  5. **Shadcn-komponenter bruker tokens** — ikke overskriv med random farger
+
+  ## Verktøy for å velge farger
+  - **coolors.co** — palette-generator med lock-funksjon
+  - **Adobe Color** — fargeharmonier og kontrast-sjekk
+  - **Figma color wheel** — bygg harmonier
+  - **atmos.style** — semantisk palette fra én kilde-farge
+  - **webaim.org/resources/contrastchecker** — kontrast-test
+
+  ## Test-regime
+  - Kjør kontrast-test på alle tekst/bakgrunn-kombinasjoner
+  - Simulér fargeblindhet (Chrome DevTools → Rendering → Emulate vision deficiencies)
+  - Se i mørkt og lyst rom (OLED vs LCD forskjell)
+
+  ## Regler i vårt prosjekt
+
+  ### Hva brukes hvor
+  - **Lilla (`lys-500`)**: Aksent på lys-siden (knapper, highlights, ikon-farge)
+  - **Turkis (`smykker-500`)**: Aksent på smykke-siden
+  - **Lyseblå nøytral**: Bakgrunn `/`, footer, admin-paneler
+  - **Mørk tekst** (neutral-900): All brødtekst
+  - **Muted tekst** (neutral-500): Sekundær tekst, datoer, meta
+  - **Grønn**: Suksess-toast ("Innlegg lagret")
+  - **Rød**: Feilmelding, slett-knapp
+  - **Orange**: "Utkast"-badge, "Ulagrede endringer"
+
+  ### Unngå
+  - ❌ 4 aksentfarger på samme side (visuell kakofoni)
+  - ❌ Ren sort (`#000`) — bruk neutral-900 (litt blå-tintet)
+  - ❌ Ren hvit (`#fff`) — bruk neutral-50 (varmere)
+  - ❌ Rød for suksess eller grønn for feil (bryter brukerforventninger)
+
+  ## Akseptansekriterier
+  - Alle farger via CSS-variabler (ingen hex i komponenter)
+  - Semantiske farger brukes konsekvent (rød = feil overalt)
+  - Kontrast minst 4.5:1 for brødtekst
+  - Hobby-aksent bytter automatisk ved `data-hobby`
+  - Disabled-tilstander tydelig men lesbare
+
+  ## Rules
+  - ALDRI bruk rød/grønn som eneste indikator (fargeblindhet — legg til ikon/tekst)
+  - ALDRI bryt semantiske konvensjoner (grønn feil, rød suksess)
+  - ALLTID test nye fargevalg mot eksisterende palette
+  - Maks 5 primærfarger i paletten (ekskludert shades)
+  - Ved tvil: velg rolig over dramatisk — siden er subtil-med-personlighet

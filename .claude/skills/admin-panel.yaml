@@ -1,0 +1,75 @@
+name: admin-panel
+description: Admin dashboard at /admin with content management and user admin
+version: 1.0.0
+tags: [admin, ui, dashboard]
+
+instructions: |
+  # Admin Panel — Dashboard for admins
+
+  ## Mål
+  `/admin` er hjertet for innholdshåndtering. Kun admins har tilgang.
+
+  ## Sidekart
+  - `/admin` — Dashboard (statistikk + nylige innlegg + "Nytt innlegg"-knapp)
+  - `/admin/ny` — Nytt innlegg (velg hobby først)
+  - `/admin/innlegg/[id]` — Rediger innlegg
+  - `/admin/innlegg` — Liste over alle innlegg (filter: hobby, publisert/utkast)
+  - `/admin/brukere` — Administrer andre admins
+  - `/admin/bilder` — Bildebibliotek (valgfritt)
+
+  ## Layout
+  - Sidebar med nav-lenker (Dashboard, Innlegg, Brukere, Bilder)
+  - Topbar med brukermenu (navn, profilbilde, logg ut)
+  - Hovedområde høyre
+  - Nøytrale farger (lilla/turkis brukes kun som aksent — dette er admin, ikke et showcase)
+
+  ## Dashboard-innhold
+  ```tsx
+  // /admin/page.tsx
+  export default async function AdminDashboard() {
+    await requireAdmin();
+
+    const [postsCount, lysCount, smykkerCount, recent] = await Promise.all([
+      db.$count(posts),
+      db.$count(posts, eq(posts.hobby, 'lys')),
+      db.$count(posts, eq(posts.hobby, 'smykker')),
+      db.query.posts.findMany({ orderBy: desc(posts.updatedAt), limit: 5 }),
+    ]);
+
+    return (
+      <div>
+        <Stats total={postsCount} lys={lysCount} smykker={smykkerCount} />
+        <Link href="/admin/ny" className="btn-primary">Nytt innlegg</Link>
+        <RecentPosts posts={recent} />
+      </div>
+    );
+  }
+  ```
+
+  ## "Nytt innlegg"-knapp
+  Stor, prominent. Ved klikk:
+  1. Dialog: "Hvilken hobby?" — lys / smykker
+  2. Ved valg, naviger til `/admin/ny?hobby=lys`
+  3. Se `innholds-editor` skill for selve editoren
+
+  ## Innlegg-liste
+  Tabell med: Tittel, Hobby (badge), Publisert (Ja/Nei), Oppdatert, Handlinger (Rediger, Slett, Forhåndsvisning)
+  Filter øverst: hobby-velger, utkast-toggle, søk.
+
+  ## Brukerliste
+  Se `admin-roller` skill — tabell med rolle-knapper.
+
+  ## Sletting
+  Alltid med bekreftelsesdialog. "Er du sikker? Innlegget og alle bilder slettes permanent."
+
+  ## Akseptansekriterier
+  - Ikke-admins redirectes til `/` fra `/admin/*`
+  - Dashboard viser live tall fra database
+  - "Nytt innlegg" åpner hobby-valg, deretter editor
+  - Sletting krever bekreftelse
+
+  ## Rules
+  - Alle `/admin/*` ruter må gå gjennom layout som verifiserer admin
+  - Server Actions (slett, publiser, oppdater rolle) starter alltid med `requireAdmin()`
+  - Sensitive handlinger (slett, degrader admin) krever bekreftelsesdialog
+  - Bruk Server Components for data-henting, Client Components kun for interaktivitet

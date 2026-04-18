@@ -1,0 +1,126 @@
+name: nav-header
+description: Sticky morphing header that changes color per hobby + marquee ticker
+version: 1.0.0
+tags: [ui, navigation, header, marquee]
+
+instructions: |
+  # Nav Header — Sticky morphende header
+
+  ## Mål
+  En liten, elegant header øverst som:
+  - Forblir synlig ved scroll (sticky)
+  - Krymper og blir mer kompakt når du scroller ned
+  - Bytter farge-aksent basert på hvilken hobby-side du er på
+  - Inneholder marquee med nyeste innlegg
+
+  ## Struktur
+  ```
+  ┌─────────────────────────────────────────────────────┐
+  │  [Nyeste: "Mitt første sølvsmykke" · ...]           │ ← Marquee (kun øverst, skjules ved scroll)
+  ├─────────────────────────────────────────────────────┤
+  │  Logo       [Lys]  [Smykker]  [Om]   🔍  Logg inn  │ ← Header
+  └─────────────────────────────────────────────────────┘
+  ```
+
+  ## Header-komponent
+  ```tsx
+  'use client';
+  import { motion, useScroll, useTransform } from 'framer-motion';
+  import { usePathname } from 'next/navigation';
+
+  export function Header() {
+    const { scrollY } = useScroll();
+    const height = useTransform(scrollY, [0, 100], [72, 56]);
+    const blur = useTransform(scrollY, [0, 100], [8, 16]);
+
+    const pathname = usePathname();
+    const hobby = pathname.startsWith('/lys') ? 'lys'
+                : pathname.startsWith('/smykker') ? 'smykker'
+                : null;
+
+    return (
+      <motion.header
+        data-hobby={hobby}
+        style={{ height, backdropFilter: `blur(${blur}px)` }}
+        className="sticky top-0 z-50 bg-white/70 border-b border-[var(--color-accent)]/20"
+      >
+        <nav className="container mx-auto flex items-center justify-between h-full px-4">
+          <Logo />
+          <NavLinks hobby={hobby} />
+          <div className="flex items-center gap-2">
+            <SearchButton />
+            <UserMenu />
+          </div>
+        </nav>
+      </motion.header>
+    );
+  }
+  ```
+
+  ## Marquee (Nyeste innlegg)
+  ```tsx
+  'use client';
+  import { motion } from 'framer-motion';
+
+  export function Marquee({ posts }: { posts: Post[] }) {
+    const items = [...posts, ...posts]; // dupliser for sømløs loop
+
+    return (
+      <div className="overflow-hidden bg-black/5 border-b border-white/10 py-2">
+        <motion.div
+          className="flex gap-8 whitespace-nowrap"
+          animate={{ x: ['0%', '-50%'] }}
+          transition={{ duration: 40, repeat: Infinity, ease: 'linear' }}
+        >
+          {items.map((post, i) => (
+            <Link key={i} href={`/${post.hobby}/${post.slug}`} className="text-sm">
+              {post.hobby === 'lys' ? '🕯️' : '💎'} {post.title}
+            </Link>
+          ))}
+        </motion.div>
+      </div>
+    );
+  }
+  ```
+
+  ### Pause ved hover
+  ```tsx
+  const [paused, setPaused] = useState(false);
+  <motion.div
+    onMouseEnter={() => setPaused(true)}
+    onMouseLeave={() => setPaused(false)}
+    animate={{ x: paused ? undefined : ['0%', '-50%'] }}
+    ...
+  />
+  ```
+
+  ### Reduced motion
+  Marquee skjules eller blir statisk ved `prefers-reduced-motion: reduce`.
+
+  ## Nav-lenker
+  - Lys (aktiv når path starter med `/lys`)
+  - Smykker (aktiv når path starter med `/smykker`)
+  - Om (ruter til `/`)
+  - Logg inn / Min konto
+
+  Aktiv lenke markeres med farge-underline i hobby-aksent.
+
+  ## Bytt-verden diskret lenke (i footer, ikke header)
+  Se `hobby-skille` skill — footer har liten "→ Besøk [annen hobby]"-lenke.
+
+  ## Logo
+  Enkel ordmerke i to farger (lilla + turkis) — eller custom SVG.
+  Klikk fører til `/`.
+
+  ## Akseptansekriterier
+  - Header forblir synlig ved scroll
+  - Header krymper etter 100px scroll
+  - Farge-aksent bytter mellom lys/smykker-sider
+  - Marquee scroller jevnt, pauser ved hover
+  - Reduced motion respekteres
+
+  ## Rules
+  - Header må ha god contrast uansett bakgrunn (glassmorphism-kort)
+  - Marquee kan ha maks 10 innlegg — ikke overvelde
+  - Logo klikkbar og tilgjengelig
+  - Nav er `<nav>` med `aria-label="Hovednavigasjon"`

@@ -1,0 +1,101 @@
+name: layout-monstre
+description: Reusable layout patterns — Bento grid, Masonry, Magazine
+version: 1.0.0
+tags: [ui, layout, grid, masonry]
+
+instructions: |
+  # Layout-mønstre — Gjenbrukbare layouts
+
+  ## Tre hovedmønstre
+
+  ### 1. Bento Grid (varierte størrelser)
+  Brukes på hobby-forside (`/lys`, `/smykker`) for fremhevede innlegg.
+
+  ```tsx
+  // src/components/layout/BentoGrid.tsx
+  export function BentoGrid({ posts }: { posts: Post[] }) {
+    // Forutsetter 6 innlegg, layout: 1 stor + 2 medium + 3 små
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 h-[600px]">
+        <div className="md:col-span-2 md:row-span-2">
+          <BentoCard post={posts[0]} size="xl" />
+        </div>
+        <div className="md:col-span-2">
+          <BentoCard post={posts[1]} size="lg" />
+        </div>
+        <BentoCard post={posts[2]} size="md" />
+        <BentoCard post={posts[3]} size="md" />
+        <BentoCard post={posts[4]} size="md" />
+        <BentoCard post={posts[5]} size="md" />
+      </div>
+    );
+  }
+  ```
+
+  Hver `BentoCard` tilpasser innhold etter størrelse (stor = hero med overskrift, liten = bilde + tittel).
+
+  ### 2. Masonry (Pinterest-stil)
+  Brukes for "bla alle innlegg"-visning.
+
+  ```tsx
+  export function MasonryGrid({ posts, hobby }: Props) {
+    return (
+      <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4">
+        {posts.map((post) => (
+          <div key={post.id} className="mb-4 break-inside-avoid">
+            <PostCard post={post} hobby={hobby} />
+          </div>
+        ))}
+      </div>
+    );
+  }
+  ```
+
+  Fordeler: CSS-only, ingen JS-library, fungerer med SSR.
+
+  ### 3. Magazine (to-kolonne med sticky)
+  Brukes på post-detaljside. Se `post-detalj-visning` skill.
+
+  ## Mindre mønstre
+
+  ### Split-screen
+  Brukes på `/start` pill-valget.
+  ```tsx
+  <div className="h-screen grid grid-cols-1 md:grid-cols-2">
+    <div data-hobby="lys">...</div>
+    <div data-hobby="smykker">...</div>
+  </div>
+  ```
+
+  ### Carousel (valgfritt)
+  For "Nyeste innlegg"-marquee øverst. Ikke full carousel — bruk kontinuerlig scroll.
+
+  ## Responsiv-logikk
+  - **Mobil (< 640px)**: Alle grids blir single-kolonne
+  - **Tablet (640-1024px)**: 2 kolonner
+  - **Desktop (> 1024px)**: 3-4 kolonner avhengig av mønster
+
+  ## Container-maksbredde
+  ```css
+  .container-narrow { max-width: 768px; }   /* Tekst-tunge sider */
+  .container-wide { max-width: 1200px; }    /* Gallerier */
+  .container-full { max-width: none; }      /* Hero-seksjoner */
+  ```
+
+  ## Spacing-system
+  Bruk Tailwind-spacing konsekvent:
+  - Mellom kort: `gap-4` (16px)
+  - Mellom seksjoner: `my-16` (64px)
+  - Innside kort: `p-4` til `p-8`
+
+  ## Akseptansekriterier
+  - Bento-grid har synlig rytme (store og små elementer)
+  - Masonry pakker tett uten tomme hull
+  - Magazine har sticky sidepanel på desktop
+  - Alle layouts blir single-kolonne på mobil
+
+  ## Rules
+  - Bruk CSS Grid eller CSS columns — ikke JS-baserte libraries
+  - Alltid `break-inside-avoid` på masonry-barn
+  - Bilder har `aspect-ratio` for å unngå layout shift
+  - Skeleton-loadere mens data henter

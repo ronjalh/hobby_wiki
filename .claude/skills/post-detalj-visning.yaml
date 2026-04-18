@@ -1,0 +1,125 @@
+name: post-detalj-visning
+description: Magazine-style post detail page with sticky image
+version: 1.0.0
+tags: [ui, post, magazine-layout]
+
+instructions: |
+  # Post-detalj — Magazine-stil visning
+
+  ## Mål
+  Når besøkende klikker på et innlegg, åpnes en detaljert side som er vakker å lese.
+  Inspirasjon: digitale magasin-artikler.
+
+  ## Layout
+  ```
+  ┌─────────────────────────────────────┐
+  │  Breadcrumb (Hjem > Lys > Tittel)  │
+  ├─────────────────────────────────────┤
+  │                                     │
+  │       Cover-bilde (hero, bred)      │
+  │                                     │
+  ├─────────────────────────────────────┤
+  │  TITTEL STOR                        │
+  │  Dato · Tagger                      │
+  ├──────────────────┬──────────────────┤
+  │                  │                  │
+  │   Sticky cover   │   Tekst-         │
+  │   bilde miniatyr │   innhold        │
+  │   (følger ved    │   (Tiptap)       │
+  │   scroll)        │                  │
+  │                  │                  │
+  └──────────────────┴──────────────────┘
+  ```
+
+  På mobil: stacket vertikalt, ingen sticky.
+
+  ## Implementasjon
+  ```tsx
+  // src/app/(public)/[hobby]/[slug]/page.tsx
+  export default async function PostPage({ params }: Props) {
+    const { hobby, slug } = await params;
+    const post = await getPost(hobby, slug);
+    if (!post) notFound();
+
+    return (
+      <article data-hobby={hobby} className="pb-16">
+        <Breadcrumb hobby={hobby} postTitle={post.title} />
+
+        <HeroImage post={post} />
+
+        <div className="grid lg:grid-cols-[1fr_2fr] gap-8 mt-12 px-4 max-w-6xl mx-auto">
+          <aside className="lg:sticky lg:top-24 lg:self-start">
+            <StickyCover post={post} />
+            <PostMeta post={post} />
+            <TagList tags={post.tags} />
+          </aside>
+
+          <div className="prose prose-lg max-w-none">
+            <h1>{post.title}</h1>
+            <TiptapRenderer content={post.content} />
+          </div>
+        </div>
+
+        <RelatedPosts hobby={hobby} currentSlug={slug} tags={post.tags} />
+      </article>
+    );
+  }
+  ```
+
+  ## Tiptap-rendering
+  ```tsx
+  // src/components/post/TiptapRenderer.tsx
+  import { generateHTML } from '@tiptap/html';
+  import StarterKit from '@tiptap/starter-kit';
+  import Image from '@tiptap/extension-image';
+
+  export function TiptapRenderer({ content }: { content: any }) {
+    const html = generateHTML(content, [StarterKit, Image]);
+    return <div dangerouslySetInnerHTML={{ __html: html }} />;
+  }
+  ```
+
+  **OBS**: `dangerouslySetInnerHTML` er ok her fordi innholdet kommer fra autentisert admin. Men vurder `DOMPurify` for ekstra sikkerhet hvis du senere tillater bruker-innsendt innhold.
+
+  ## Relaterte innlegg
+  Nederst på siden: 3 innlegg med overlappende tagger i samme hobby.
+
+  ## Metadata
+  ```tsx
+  export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const post = await getPost(params.hobby, params.slug);
+    return {
+      title: post.title,
+      description: post.excerpt,
+      openGraph: {
+        images: [{ url: post.coverImageUrl }],
+      },
+    };
+  }
+  ```
+
+  ## Forhåndsvisning for admin
+  `?preview=true` lar admin se upubliserte innlegg.
+  ```tsx
+  const isPreview = searchParams.preview === 'true';
+  const session = await auth();
+  const canPreview = session?.user.role === 'admin';
+
+  if (!post.published && !(isPreview && canPreview)) notFound();
+  ```
+
+  ## 404
+  Hvis post ikke finnes eller ikke er publisert: Next.js `notFound()` → custom 404-side med illustrasjon (se `empty-feil-sider`).
+
+  ## Akseptansekriterier
+  - Cover-bilde vises som hero
+  - Sticky sidepanel på desktop følger scroll
+  - Tagger klikkbare, fører til filter
+  - Delbar URL med bilde-preview (OG-meta)
+  - 404 for ikke-eksisterende/utkast
+
+  ## Rules
+  - Kun publiserte innlegg vises (unntak: admin-preview)
+  - Alltid `<article>` wrapper for semantikk
+  - Breadcrumb for navigasjon
+  - Støtt deep-linking til seksjoner (anchor-links)

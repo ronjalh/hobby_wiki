@@ -1,0 +1,174 @@
+name: lysstoping-domene
+description: Domain knowledge for candle making — waxes, wicks, fragrances, techniques, troubleshooting
+version: 1.0.0
+tags: [domain, lysstoping, candles, content]
+
+instructions: |
+  # Lysstøping — Domenekunnskap
+
+  ## Mål
+  Gir Claude vokabular og kontekst når Ronja ber om hjelp til å skrive innlegg, foreslå tagger, eller strukturere innhold om lysstøping.
+
+  > **Ronja**: Fyll inn dine egne teknikker, materialer og preferanser i "Mine notater" seksjonene under — det gjør skillen mye mer nyttig.
+
+  ## Vokstyper
+
+  ### Soya-voks
+  - Plantebasert, vegansk
+  - Smeltepunkt: 46-55 °C
+  - Brennes rent, lite sot
+  - Tar duft bra
+  - Godt for container-lys
+
+  ### Parafin
+  - Petroleum-basert (billig, mye brukt)
+  - Smeltepunkt: 52-70 °C
+  - Sterkt duft-kast
+  - Kan lage mer sot
+
+  ### Bivoks
+  - Naturlig, fra bier
+  - Smeltepunkt: 62-65 °C
+  - Lett honning-duft, varmt gult lys
+  - Lang brenntid
+  - Dyrere
+
+  ### Palmevoks
+  - Plantebasert, lager "krystall"-effekt
+  - Smeltepunkt: 60 °C
+  - Kontroversielt pga. miljø (velg RSPO-sertifisert)
+
+  ### Kokosvoks
+  - Mykt, kremet, tar duft veldig bra
+  - Ofte blandet med soya
+  - Rent å brenne
+
+  ### Mine notater (Ronja fyller inn)
+  <!-- Hvilke merker bruker du? Hvor kjøper du? Favorittblandinger? -->
+
+  ## Veker
+
+  ### Typer
+  - **Bomull** — klassisk, rent brenn
+  - **Tre-veker** — knitrer, bredere flamme
+  - **Hemp** — naturlig, litt røykere
+  - **Zinkkjerne** — foreldet, ikke anbefalt (helserisiko)
+
+  ### Størrelser
+  Veke-størrelse avhenger av:
+  - Diameter på lys (viktigst)
+  - Vokstype
+  - Duftolje-mengde
+
+  Generelle tabeller finnes hos leverandører (f.eks. CandleScience, Rustic Escentuals).
+
+  ### Mine notater (Ronja fyller inn)
+  <!-- Hvilke veker bruker du oftest? -->
+
+  ## Duftoljer
+
+  ### Mengde
+  - **Fragrance load**: 6-10% av vokstens vekt
+  - For sterk: over 12% kan gi dårlig brenn
+  - For svak: under 5% — knapt merkbar duft
+
+  ### Tilsettingstemperatur
+  - Soya: 80-85 °C
+  - Parafin: 75-80 °C
+  - Bivoks: 70 °C (for å ikke "brenne" duften)
+
+  ### Typer
+  - **Fragrance oils (FO)** — syntetisk, mange varianter, sterk
+  - **Essential oils (EO)** — naturlig, dyrere, mer subtil
+
+  ### Mine notater
+  <!-- Favorittdufter? Leverandører? Blandinger? -->
+
+  ## Farger
+
+  ### Typer
+  - **Flytende fargestoff** — enklest å dosere
+  - **Fargeblokk** — må smeltes, kraftig
+  - **Fargechips** — mellomting
+
+  ### Tips
+  - Start med mindre farge enn du tror
+  - Test ved å dryppe på hvitt papir (ferdig lys blir lysere når det kjøler)
+
+  ### Mine notater
+  <!-- Favorittfarger? Lilla-blandinger? -->
+
+  ## Lys-typer
+
+  ### Container-lys
+  Støpes direkte i glass/beholder. Vanlig for duftlys.
+
+  ### Pilar-lys
+  Fristående. Krever form (støpeform) og frigjøring.
+
+  ### Votiv
+  Små, selvbrennende i egen beholder.
+
+  ### Refill
+  Lys-kapsler som fyller eksisterende holdere.
+
+  ### Taper
+  Tradisjonelle, lange, tynne (dyp-støpte eller formet).
+
+  ## Prosess (grunnsteg)
+  1. Vei voks, smelt i bain-marie til riktig temperatur
+  2. Avkjøl litt, tilsett duftolje og farge, rør forsiktig
+  3. Forbered beholder med veke (bruk veke-lim eller varmepistol)
+  4. Hell voksen ved "pour temperature" (varierer per voks)
+  5. La størkne — unngå vibrasjoner/temperatursvingninger
+  6. Trim veke til 5-6 mm før første brenning
+  7. **Curing**: La stå 1-2 uker før bruk for best duft-kast
+
+  ## Vanlige problemer
+
+  ### Frosting (soya)
+  Hvite krystaller på overflaten. Kosmetisk, ikke skadelig. Preventivt:
+  - Bruk voks spesifikt laget for container
+  - Ikke avkjøl for raskt
+
+  ### Sinkhole
+  Hulrom rundt veken. Årsak: avkjøling for raskt eller ujevnt.
+  Fix: topp opp med ekstra voks.
+
+  ### Wet spots
+  Bobler mellom voks og glass. Glass for kaldt ved støping.
+  Fix: varm glassene lett før støping.
+
+  ### Tunneling
+  Lys brenner kun midten. Årsak: for kort første brenning (burde brenne til full "melt pool" — kant til kant).
+
+  ### Dårlig duft-kast
+  - For lite FO
+  - FO tilsatt ved feil temperatur
+  - Ikke nok curing-tid
+  - Feil veke-størrelse (for liten melt pool)
+
+  ### Røyk/sot
+  - Veke for stor
+  - Veke ikke trimmet (trim til 5-6 mm)
+  - Trekkfylt område
+
+  ## Sikkerhet
+  - Smeltepunkt opp mot 100 °C — forbrenning mulig
+  - Duftolje kan være brannfarlig
+  - Glass må være varmebestandig (vanlig bolsjeglass kan sprekke)
+  - Aldri uten tilsyn ved støping
+  - Flash point på duftoljer — sjekk datablad
+
+  ## Tagg-forslag (for filtrering)
+  `soya-voks`, `parafin`, `bivoks`, `palmevoks`, `kokosvoks`,
+  `duft-vanilje`, `duft-lavendel`, `duft-essensiell`, `uten-duft`,
+  `pilar`, `container`, `refill`, `votiv`, `taper`,
+  `nybegynner`, `avansert`, `eksperiment`,
+  `julegave`, `bursdag`, `bestilt`
+
+  ## Rules
+  - Når du hjelper skrive innlegg: bruk norsk fag-terminologi (støpe, melt pool, curing, voks-bolle)
+  - Foreslå relevante tagger fra listen
+  - Respekter Ronjas egne preferanser (se "Mine notater"-seksjoner)
+  - Ikke gi medisinske råd om aroma-terapi — hold det til håndverk

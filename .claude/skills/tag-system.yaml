@@ -1,0 +1,106 @@
+name: tag-system
+description: Tags for categorizing posts — filter, search, and suggestion
+version: 1.0.0
+tags: [content, taxonomy, tags, filtering]
+
+instructions: |
+  # Tag-system — Kategorisering av innlegg
+
+  ## Mål
+  Tagger lar Ronja gruppere innlegg (f.eks. "soya-voks", "sterlingsølv", "julegaver", "nybegynner") og lar besøkende filtrere/oppdage relatert innhold.
+
+  ## Database
+  Se `database-schema` — `tags` og `posts_tags` tabeller.
+  - `tags.slug` er unik (URL-vennlig)
+  - `tags.label` er visningsnavn
+  - `tags.hobby` er `'lys' | 'smykker' | 'begge'` — hvilke hobbyer kan bruke tag-en
+
+  ## Foreslåtte "seed"-tagger
+  Ikke påkrevd, men et godt utgangspunkt:
+
+  **Lys (se `lysstoping-domene` for mer):**
+  - soya-voks, parafin, bivoks, palmevoks
+  - duft, nøytral, essensielle-oljer
+  - pilar, container, refill, votiv
+  - nybegynner, avansert, eksperiment
+
+  **Smykker (se `smykkelaging-domene` for mer):**
+  - sterlingsølv, gull-filled, kopper
+  - perler, krystall, stein, glass
+  - wire-wrap, chainmail, stringing
+  - halskjede, armbånd, øredobber, ring
+
+  **Begge:**
+  - julegaver, bestilt, personlig, første-forsøk
+
+  ## Komponenter
+
+  ### Tag-chip
+  ```tsx
+  export function TagChip({ tag, size = 'md', onClick }: Props) {
+    return (
+      <Link
+        href={`/${tag.hobby === 'begge' ? '' : tag.hobby}?tag=${tag.slug}`}
+        className="..."
+      >
+        #{tag.label}
+      </Link>
+    );
+  }
+  ```
+
+  ### Tag-velger i editor
+  Combobox med eksisterende tagger + mulighet å opprette ny.
+  ```tsx
+  <TagPicker
+    hobby={hobby}
+    selected={selectedTags}
+    onChange={setSelectedTags}
+    allowCreate
+  />
+  ```
+
+  Ved ny tag: lag slug fra label (`slugify("Julegaver 2024")` → `"julegaver-2024"`).
+
+  ## Server Actions
+  ```typescript
+  export async function createTag(label: string, hobby: Hobby | 'begge') {
+    await requireAdmin();
+    const slug = slugify(label);
+    const [tag] = await db.insert(tags).values({ label, slug, hobby }).returning();
+    return tag;
+  }
+
+  export async function setPostTags(postId: string, tagIds: string[]) {
+    await requireAdmin();
+    await db.delete(postsTags).where(eq(postsTags.postId, postId));
+    if (tagIds.length > 0) {
+      await db.insert(postsTags).values(
+        tagIds.map((tagId) => ({ postId, tagId }))
+      );
+    }
+  }
+  ```
+
+  ## Filtrering
+  Se `filter-sortering` skill — tagger er én av filterparametrene.
+
+  ## Tag-side
+  `/lys?tag=soya-voks` — viser alle lys-innlegg med tag-en "soya-voks".
+  `/smykker?tag=halskjede` — tilsvarende for smykker.
+  Opp til 3 tagger kan kombineres (AND-logikk).
+
+  ## Visning på innlegg
+  Post-detaljsiden viser alle tagger som chips nederst.
+  Masonry-kort viser maks 2 tagger per kort (visuell støy).
+
+  ## Akseptansekriterier
+  - Admin kan opprette ny tag fra editor
+  - Tagger dukker opp som chips på innlegg
+  - Klikk på chip filtrerer lista
+  - Unik slug — duplikater avvises
+
+  ## Rules
+  - Tag-slugs er alltid lowercase, bindestrek-separerte, ASCII
+  - Norsk æøå → norsk-vennlig slug (`læring` → `laring` eller `læring`? Velg ett, hold konsekvent — anbefaler ASCII-variant)
+  - Ikke slett tagger som er i bruk — varsle admin i stedet

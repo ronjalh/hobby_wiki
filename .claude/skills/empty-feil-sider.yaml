@@ -1,0 +1,130 @@
+name: empty-feil-sider
+description: 404 and empty states with themed illustrations (broken chain, extinguished candle)
+version: 1.0.0
+tags: [ui, error-pages, empty-states, illustrations]
+
+instructions: |
+  # Empty og Feilsider
+
+  ## Mål
+  Feilsider og tomme tilstander skal ha egne illustrasjoner, men med normal tekst (ikke artig tekst).
+  Bruker: brutt kjede (smykker) og avslukket lys (lys) som visuell ankring.
+
+  ## Tilstander å dekke
+  1. **404** — siden finnes ikke
+  2. **Tomt søk** — `/sok?q=...` ga 0 treff
+  3. **Tom filter-liste** — filter matcher ingen innlegg
+  4. **Ingen innlegg ennå** — ny hobby uten innhold
+  5. **Feil under lasting** — uventet error
+  6. **Uautorisert** — prøver å nå `/admin` uten admin-rolle
+
+  ## Illustrasjoner
+  Se `illustrasjoner` skill for faktisk SVG.
+  - `BrokenChain` — smykke-hobby
+  - `ExtinguishedCandle` — lys-hobby
+  - `WiltedFlower` — nøytral (for felles sider)
+
+  Velg illustrasjon basert på kontekst (hvis du er på `/smykker`, bruk brutt kjede).
+
+  ## 404-side
+  ```tsx
+  // src/app/not-found.tsx
+  import Link from 'next/link';
+  import { BrokenChain, ExtinguishedCandle } from '@/components/illustrations';
+
+  export default function NotFound() {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6">
+        <div className="w-48 h-48 opacity-80">
+          <ExtinguishedCandle />
+        </div>
+        <h1 className="text-4xl font-serif">Siden finnes ikke</h1>
+        <p className="text-muted">Sjekk URL-en eller gå tilbake til forsiden.</p>
+        <div className="flex gap-3">
+          <Link href="/" className="btn-primary">Til forsiden</Link>
+          <Link href="/start" className="btn-secondary">Velg verden</Link>
+        </div>
+      </div>
+    );
+  }
+  ```
+
+  ## Kontekstuell 404 per hobby
+  `/lys/ikke-eksisterer` og `/smykker/ikke-eksisterer` får hver sin 404 som matcher hobby-stil:
+  ```tsx
+  // src/app/(public)/lys/not-found.tsx
+  export default function LysNotFound() {
+    return (
+      <div data-hobby="lys" className="...">
+        <ExtinguishedCandle />
+        <h1>Lyset finnes ikke</h1>
+        <p>Dette innlegget finnes ikke lenger, eller er ikke publisert.</p>
+        <Link href="/lys">Tilbake til lysstøping</Link>
+      </div>
+    );
+  }
+  ```
+
+  ## Empty-state komponent (gjenbrukbar)
+  ```tsx
+  // src/components/empty/EmptyState.tsx
+  export function EmptyState({
+    illustration,
+    title,
+    description,
+    action,
+  }: Props) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-16">
+        <div className="w-32 h-32 opacity-60">{illustration}</div>
+        <h3 className="text-xl font-semibold">{title}</h3>
+        {description && <p className="text-muted text-center max-w-md">{description}</p>}
+        {action}
+      </div>
+    );
+  }
+  ```
+
+  ### Brukseksempel (tomt søk)
+  ```tsx
+  <EmptyState
+    illustration={<BrokenChain />}
+    title="Ingen treff"
+    description="Prøv å søke med andre ord, eller bla gjennom alle innlegg."
+    action={<Link href="/lys">Se alle lys-innlegg</Link>}
+  />
+  ```
+
+  ## Error boundary
+  ```tsx
+  // src/app/error.tsx
+  'use client';
+  export default function Error({ error, reset }: Props) {
+    return (
+      <div className="...">
+        <WiltedFlower />
+        <h1>Noe gikk galt</h1>
+        <p>En uventet feil oppsto. Prøv å laste siden på nytt.</p>
+        <button onClick={reset}>Prøv igjen</button>
+      </div>
+    );
+  }
+  ```
+
+  ## Tekst-guide (nøytral, ikke artig)
+  - "Siden finnes ikke"
+  - "Ingen treff"
+  - "Ingen innlegg ennå"
+  - "Noe gikk galt"
+  - Unngå: "Oops!", "Dette lyset er slukket", "Kjeden er brutt"
+
+  ## Akseptansekriterier
+  - Hver feiltype har egen illustrasjon
+  - Tekst er nøytral og informativ
+  - Alltid en handling (lenke eller knapp)
+  - Responsive (bilde skaleres på mobil)
+
+  ## Rules
+  - Illustrasjon skal være max 200px på desktop, 120px mobil
+  - Bruk `role="alert"` på error-sider
+  - Logg uventede errors til konsoll (senere: Vercel logging)

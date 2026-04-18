@@ -1,0 +1,201 @@
+name: forside-pill-valg
+description: Matrix-inspired pill choice at /start — purple (lys) vs turquoise (smykker)
+version: 1.0.0
+tags: [landing, forside, matrix, pills, interactive]
+
+instructions: |
+  # Forside Pill-valg — Matrix-inspirert `/start`
+
+  ## Mål
+  `/start` er en dramatisk, minimalistisk valgside der besøkende velger hvilken "verden" de vil inn i.
+  Inspirasjon: Matrix (rød/blå pille) — men med lilla (lys) og turkis (smykker).
+
+  ## Visuelt konsept
+  ```
+  ┌─────────────────────────────────────────┐
+  │                                         │
+  │          (mørk, stjernete void)         │
+  │                                         │
+  │                                         │
+  │      ┌──────┐         ┌──────┐          │
+  │      │      │         │      │          │
+  │      │ 💊   │         │  💊  │          │
+  │      │lilla │         │turkis│          │
+  │      │      │         │      │          │
+  │      └──────┘         └──────┘          │
+  │                                         │
+  │    Lysstøping        Smykkelaging       │
+  │                                         │
+  │        (subtil tekst nederst)           │
+  │                                         │
+  └─────────────────────────────────────────┘
+  ```
+
+  ## Struktur
+  ```tsx
+  // src/app/(public)/start/page.tsx
+  'use client';
+  import { motion } from 'framer-motion';
+  import { StarField } from '@/components/background/StarField';
+  import { Pill } from './Pill';
+
+  export default function StartPage() {
+    return (
+      <div className="relative min-h-screen bg-aurora overflow-hidden">
+        <StarField count={80} />
+
+        <main className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 max-w-4xl"
+          >
+            <Pill hobby="lys" href="/lys" label="Lysstøping" />
+            <Pill hobby="smykker" href="/smykker" label="Smykkelaging" />
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.6 }}
+            transition={{ delay: 1.5 }}
+            className="absolute bottom-8 text-white/60 text-sm"
+          >
+            Velg en verden å utforske
+          </motion.p>
+        </main>
+      </div>
+    );
+  }
+  ```
+
+  ## Pill-komponent
+  ```tsx
+  'use client';
+  import { motion } from 'framer-motion';
+  import Link from 'next/link';
+  import { Flame, Gem } from 'lucide-react';
+
+  export function Pill({ hobby, href, label }: Props) {
+    const [hovered, setHovered] = useState(false);
+
+    return (
+      <Link href={href}>
+        <motion.div
+          data-hobby={hobby}
+          onHoverStart={() => setHovered(true)}
+          onHoverEnd={() => setHovered(false)}
+          whileHover={{ scale: 1.15, rotate: hobby === 'lys' ? -2 : 2 }}
+          whileTap={{ scale: 0.95 }}
+          className="relative flex flex-col items-center group"
+        >
+          {/* Selve pillen */}
+          <motion.div
+            className="w-32 h-48 rounded-full shadow-2xl"
+            style={{
+              background: `linear-gradient(135deg, var(--color-accent-light), var(--color-accent-dark))`,
+              boxShadow: hovered
+                ? `0 0 60px var(--color-glow), inset 0 0 30px hsla(0, 0%, 100%, 0.2)`
+                : `0 10px 30px hsla(0, 0%, 0%, 0.4)`,
+            }}
+            animate={{
+              boxShadow: hovered
+                ? `0 0 80px var(--color-glow)`
+                : `0 10px 30px hsla(0, 0%, 0%, 0.4)`,
+            }}
+          />
+
+          {/* Ikon i midten av pillen */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            {hobby === 'lys'
+              ? <Flame className="w-12 h-12 text-white" />
+              : <Gem className="w-12 h-12 text-white" />
+            }
+          </div>
+
+          {/* Partikler rundt ved hover */}
+          {hovered && <ParticleBurst hobby={hobby} />}
+
+          {/* Label under */}
+          <motion.span
+            className="mt-6 text-white text-lg font-serif"
+            animate={{ opacity: hovered ? 1 : 0.7 }}
+          >
+            {label}
+          </motion.span>
+        </motion.div>
+      </Link>
+    );
+  }
+  ```
+
+  ## Partikler ved hover
+  ```tsx
+  function ParticleBurst({ hobby }: Props) {
+    return (
+      <>
+        {Array.from({ length: 8 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 rounded-full"
+            style={{
+              background: hobby === 'lys' ? 'var(--color-lys-200)' : 'var(--color-smykker-200)',
+              left: '50%',
+              top: '50%',
+            }}
+            initial={{ opacity: 0, x: 0, y: 0 }}
+            animate={{
+              opacity: [0, 1, 0],
+              x: Math.cos(i * 0.8) * 80,
+              y: Math.sin(i * 0.8) * 80,
+            }}
+            transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }}
+          />
+        ))}
+      </>
+    );
+  }
+  ```
+
+  ## Klikk-overgang
+  Når pill klikkes:
+  1. Pillen zoomer mot kameraet (scale 1 → 20)
+  2. Skjermen fylles med hobby-fargen
+  3. Etter 500ms: naviger til `/lys` eller `/smykker`
+  4. Destinasjonen har egen ankomst-animasjon (flamme/kjede)
+
+  ```tsx
+  const router = useRouter();
+
+  function handleClick() {
+    // Animate pill til fullskjerm
+    setExpanding(true);
+    setTimeout(() => router.push(href), 500);
+  }
+  ```
+
+  Bruk Framer Motion `AnimatePresence` for kontrollert overgang.
+
+  ## Mobil
+  Piller stables vertikalt (grid-cols-1). Ikke side om side — for trangt.
+
+  ## Reduced motion
+  - Ingen scale/rotate ved hover (kun farge-endring)
+  - Ingen partikler
+  - Ingen zoom-overgang (direkte navigering)
+
+  ## Tilbake til `/start`
+  Fra hobby-sider: ikke i hoved-nav. Footer-link "Endre verden →" (se `hobby-skille`).
+
+  ## Akseptansekriterier
+  - Pillene er visuelt distinkte og inviterende
+  - Hover viser tydelig at dette er valgbart
+  - Klikk fører til riktig hobby-side
+  - Reduced motion fungerer
+  - Mobilt stables pillene vertikalt
+
+  ## Rules
+  - Piller må ha `aria-label` med hobby-navn
+  - Klikkbart område minst 44×44px (touch-target)
+  - Pill-animasjon skal ikke blokkere keyboard-navigering
+  - Stjerne-bakgrunn kun på `/start` (ikke andre sider)

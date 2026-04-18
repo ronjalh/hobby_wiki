@@ -1,0 +1,179 @@
+name: tilgjengelighet
+description: WCAG 2.2 accessibility — keyboard, screen readers, contrast, reduced motion
+version: 1.0.0
+tags: [a11y, accessibility, wcag, inclusive]
+
+instructions: |
+  # Tilgjengelighet — WCAG 2.2
+
+  ## Mål
+  Siden skal være brukbar for alle — inkludert folk med nedsatt syn, motorikk, kognisjon, eller som bruker skjermleser eller tastatur.
+
+  ## Kjerneprinsipper (POUR)
+  - **Perceivable** — innhold må kunne oppfattes (alt-tekst, kontrast)
+  - **Operable** — kan brukes med tastatur, mus, touch, tale
+  - **Understandable** — lesbar og forutsigbar
+  - **Robust** — fungerer på tvers av teknologi og hjelpemidler
+
+  ## Tastatur-navigasjon
+
+  ### Fokus
+  - Alle interaktive elementer kan nåes med `Tab`
+  - Tydelig fokus-outline — aldri fjern med `outline: none` uten erstatning
+  - Rekkefølge følger visuell layout
+
+  ```css
+  *:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: inherit;
+  }
+  ```
+
+  ### Skip-link
+  Øverst i `<body>`, kun synlig ved fokus:
+  ```tsx
+  <a href="#hovedinnhold" className="sr-only focus:not-sr-only">
+    Hopp til hovedinnhold
+  </a>
+  ```
+
+  ### Keyboard shortcuts
+  - `Cmd+K` / `Ctrl+K` — åpne søk
+  - `Esc` — lukk modaler/dialoger
+  - Dokumenter shortcuts for brukeren (f.eks. i help-dialog)
+
+  ## Semantisk HTML
+  ```tsx
+  <header>...</header>
+  <nav aria-label="Hovednavigasjon">...</nav>
+  <main id="hovedinnhold">...</main>
+  <article>...</article>
+  <aside>...</aside>
+  <footer>...</footer>
+  ```
+
+  Ikke bruk `<div>` for alt — det stjeler semantikk fra skjermlesere.
+
+  ## ARIA
+  Kun når semantisk HTML ikke er nok.
+
+  ### Labels
+  ```tsx
+  <button aria-label="Lukk dialog">×</button>
+  <input aria-label="Søk" placeholder="Søk..." />
+  ```
+
+  ### Landmarks
+  `<nav aria-label="Paginasjon">` hvis flere nav-er på siden.
+
+  ### Live regions
+  For dynamisk innhold (toast-meldinger):
+  ```tsx
+  <div role="status" aria-live="polite">
+    Innlegget er lagret
+  </div>
+  ```
+
+  ## Kontrast
+  - Normal tekst: minst **4.5:1**
+  - Stor tekst (18px+ bold eller 24px+): minst **3:1**
+  - UI-komponenter (knapper, input-kanter): minst **3:1**
+
+  Verktøy:
+  - Chrome DevTools Lighthouse
+  - webaim.org/resources/contrastchecker
+
+  Test alle farge-kombinasjoner:
+  - Lilla på lys bakgrunn
+  - Turkis på lys bakgrunn
+  - Hvit på lilla/turkis-bakgrunn
+  - Muted-tekst på bakgrunn
+
+  ## Bilder
+
+  ### Alt-tekst
+  - Informativt bilde: beskriv innholdet
+  - Dekorativt: `alt=""` (tom, men attributt er påkrevd)
+  - Kompleks figur: kort `alt` + lang `aria-describedby`
+
+  ```tsx
+  <Image src="..." alt="Håndlaget lilla votivlys på mørk bakgrunn" />
+  <Image src="..." alt="" /> {/* dekorativt */}
+  ```
+
+  ### SVG-illustrasjoner
+  ```tsx
+  <svg role="img" aria-label="Brutt kjede">
+    <title>Brutt kjede</title>
+    ...
+  </svg>
+  // eller
+  <svg aria-hidden="true">...</svg> {/* hvis dekorativ */}
+  ```
+
+  ## Skjemaer
+  - Labels koblet til input (`<label htmlFor="...">`)
+  - Feilmeldinger koblet med `aria-describedby`
+  - `aria-invalid` på ugyldige felt
+
+  ```tsx
+  <label htmlFor="title">Tittel</label>
+  <input
+    id="title"
+    aria-invalid={!!error}
+    aria-describedby={error ? 'title-error' : undefined}
+  />
+  {error && <p id="title-error" role="alert">{error}</p>}
+  ```
+
+  ## Reduced motion
+  Se `animasjoner-bevegelse` skill. Globalt:
+  ```css
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+  ```
+
+  Og JavaScript:
+  ```tsx
+  const reducedMotion = useReducedMotion();
+  if (reducedMotion) return <StaticVersion />;
+  ```
+
+  ## Skjermleser-testing
+  - macOS: VoiceOver (Cmd+F5)
+  - Windows: NVDA (gratis)
+  - Test hovedflyten: Google-innlogging, opprette innlegg, bla gjennom galleri
+
+  ## Focus-traps (modaler)
+  Når en modal åpnes, fokus må ikke "lekke" ut bak modalen.
+  shadcn/ui sine `Dialog`-komponenter håndterer dette.
+
+  ## Språk
+  ```html
+  <html lang="nb">
+  ```
+  Hjelper skjermleser bruke riktig uttale.
+
+  ## Lighthouse-mål
+  - Tilgjengelighet-score > 95
+  - Alle "manual checks" gjennomgått før lansering
+
+  ## Akseptansekriterier
+  - Kan navigere hele siden med kun tastatur
+  - Skjermleser leser innhold i logisk rekkefølge
+  - Alle bilder har alt-tekst
+  - Kontrast-krav oppfylt
+  - Reduced motion fungerer
+  - Skjema-feil annonseres til skjermleser
+
+  ## Rules
+  - ALDRI `outline: none` uten erstatning
+  - ALLE input må ha tilknyttet label
+  - ALLE ikoner må ha tekst-label eller `aria-label`
+  - ALLE animasjoner respekterer reduced-motion
+  - Test med tastatur før hver merge

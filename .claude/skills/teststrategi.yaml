@@ -1,0 +1,180 @@
+name: teststrategi
+description: Testing approach with Vitest (unit) + Playwright (E2E)
+version: 1.0.0
+tags: [testing, vitest, playwright, quality]
+
+instructions: |
+  # Test-strategi
+
+  ## Mål
+  Høy tillit til at koden fungerer før deploy. Mest fokus på auth/admin (sensitivt) og kjerneflyt (bruker oppretter innlegg).
+
+  ## Stack
+  - **Vitest** — unit + integration tests (raskt, ESM-native)
+  - **Playwright** — end-to-end (bruker-flyt)
+  - **Testing Library** — React-komponent testing
+
+  ## Dekningsmål
+  - Auth/admin-logikk (requireAdmin, role promotion): **95%**
+  - Server Actions (createPost, uploadImage): **90%**
+  - `lib/` business logic (slugify, validators): **85%**
+  - Komponenter: **60%** (fokus på logikk, ikke pixelperfekt)
+  - UI-interaksjon via E2E: kritiske flyter
+
+  ## Oppsett
+
+  ### Vitest
+  ```json
+  // package.json
+  "scripts": {
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  }
+  ```
+
+  ```typescript
+  // vitest.config.ts
+  import { defineConfig } from 'vitest/config';
+  import tsconfigPaths from 'vite-tsconfig-paths';
+
+  export default defineConfig({
+    plugins: [tsconfigPaths()],
+    test: {
+      environment: 'jsdom',
+      setupFiles: ['./src/test/setup.ts'],
+      globals: true,
+    },
+  });
+  ```
+
+  ### Playwright
+  ```bash
+  npm init playwright@latest
+  ```
+
+  ```typescript
+  // playwright.config.ts
+  export default defineConfig({
+    testDir: './e2e',
+    use: { baseURL: 'http://localhost:3000' },
+    webServer: {
+      command: 'npm run build && npm start',
+      port: 3000,
+      reuseExistingServer: !process.env.CI,
+    },
+  });
+  ```
+
+  ## Unit tests
+
+  ### Pure functions
+  ```typescript
+  // src/lib/utils/slugify.test.ts
+  import { describe, it, expect } from 'vitest';
+  import { slugify } from './slugify';
+
+  describe('slugify', () => {
+    it('håndterer norske tegn', () => {
+      expect(slugify('Mitt første lys')).toBe('mitt-forste-lys');
+    });
+    it('kaster lowercase', () => {
+      expect(slugify('TEST')).toBe('test');
+    });
+    it('fjerner spesialtegn', () => {
+      expect(slugify('Hei! #verden?')).toBe('hei-verden');
+    });
+  });
+  ```
+
+  ### Server Actions (med mock-db)
+  ```typescript
+  import { createPost } from '@/app/(admin)/admin/actions';
+  import { mockAuth, mockDb } from '@/test/mocks';
+
+  describe('createPost', () => {
+    it('avviser ikke-admins', async () => {
+      mockAuth({ role: 'user' });
+      await expect(createPost({ ... })).rejects.toThrow('Krever admin-tilgang');
+    });
+
+    it('oppretter innlegg som admin', async () => {
+      mockAuth({ role: 'admin' });
+      const post = await createPost({ title: 'Test', hobby: 'lys', ... });
+      expect(post.slug).toBe('test');
+    });
+  });
+  ```
+
+  ## Integration tests (med real DB)
+  Kjør mot en Neon dev-branch:
+  ```typescript
+  import { db } from '@/db';
+  import { posts } from '@/db/schema';
+  import { beforeEach, afterAll } from 'vitest';
+
+  beforeEach(async () => {
+    await db.delete(posts); // rens mellom tester
+  });
+
+  afterAll(async () => {
+    await db.$client.end();
+  });
+
+  it('lagrer innlegg i db', async () => {
+    const [post] = await db.insert(posts).values({ ... }).returning();
+    expect(post.id).toBeDefined();
+  });
+  ```
+
+  ## E2E tests (Playwright)
+
+  ### Kritiske flyter
+  1. Besøkende blar gjennom innlegg
+  2. Besøkende søker og filtrerer
+  3. Admin logger inn med Google
+  4. Admin oppretter innlegg med bilde
+  5. Admin promoterer en annen bruker
+
+  ```typescript
+  // e2e/browse.spec.ts
+  import { test, expect } from '@playwright/test';
+
+  test('besøkende kan bla lys-innlegg', async ({ page }) => {
+    await page.goto('/lys');
+    await expect(page.getByRole('heading', { name: 'Lysstøping' })).toBeVisible();
+    await page.getByRole('link', { name: /første/i }).click();
+    await expect(page).toHaveURL(/\/lys\/.+/);
+  });
+
+  test('pill-valget navigerer riktig', async ({ page }) => {
+    await page.goto('/start');
+    await page.getByRole('link', { name: /lysstøping/i }).click();
+    await expect(page).toHaveURL('/lys');
+  });
+  ```
+
+  ### Admin-flyt (med auth-bypass i test)
+  I testing, bruk en mock-auth eller seeded admin-session.
+
+  ## Visual regression (valgfritt senere)
+  Playwright har `toHaveScreenshot()` for å fange visuelle regressjoner:
+  ```typescript
+  await expect(page).toHaveScreenshot('start-page.png');
+  ```
+
+  ## CI
+  GitHub Actions kjører `npm test` + `npm run test:e2e` på hver PR.
+
+  ## Akseptansekriterier
+  - Alle tester går grønt før merge
+  - Coverage-rapport vises i CI
+  - E2E dekker 5 kritiske flyter
+  - Tester er raske (< 30 sek for unit, < 2 min for e2e)
+
+  ## Rules
+  - Tester ved DB-skriving må rense opp etterpå
+  - Aldri test mot prod-database
+  - Mock eksterne tjenester (Google OAuth, Vercel Blob)
+  - Test-navn beskriver oppførsel, ikke implementasjon
+  - Failing tests blokkerer merge

@@ -1,0 +1,147 @@
+name: design-system
+description: Color tokens, typography, spacing — lilla/turkis/lyseblå theme
+version: 1.0.0
+tags: [design, theme, tailwind, tokens]
+
+instructions: |
+  # Design System — Farger, typografi, spacing
+
+  ## Mål
+  Et konsekvent, vakkert designsystem med subtil personlighet. Bygger på Tailwind v4 CSS-variabler.
+
+  ## Fargepalett
+
+  ### Primær-farger
+  ```css
+  /* src/app/globals.css */
+  @theme {
+    /* Lys (lysstøping) — lilla */
+    --color-lys-50:  hsl(270, 100%, 97%);
+    --color-lys-100: hsl(270, 90%, 92%);
+    --color-lys-200: hsl(270, 80%, 85%);
+    --color-lys-300: hsl(270, 75%, 75%);
+    --color-lys-400: hsl(270, 70%, 65%);
+    --color-lys-500: hsl(270, 65%, 55%);  /* primary */
+    --color-lys-600: hsl(270, 60%, 45%);
+    --color-lys-700: hsl(270, 55%, 35%);
+    --color-lys-800: hsl(270, 50%, 25%);
+    --color-lys-900: hsl(270, 45%, 15%);
+
+    /* Smykker — turkis */
+    --color-smykker-50:  hsl(180, 80%, 96%);
+    --color-smykker-100: hsl(180, 75%, 90%);
+    --color-smykker-200: hsl(180, 70%, 82%);
+    --color-smykker-300: hsl(180, 65%, 72%);
+    --color-smykker-400: hsl(180, 60%, 60%);
+    --color-smykker-500: hsl(180, 55%, 50%);  /* primary */
+    --color-smykker-600: hsl(180, 55%, 42%);
+    --color-smykker-700: hsl(180, 55%, 32%);
+    --color-smykker-800: hsl(180, 55%, 22%);
+    --color-smykker-900: hsl(180, 55%, 14%);
+
+    /* Nøytral — lyseblå tint */
+    --color-neutral-50:  hsl(210, 40%, 98%);
+    --color-neutral-100: hsl(210, 35%, 95%);
+    --color-neutral-200: hsl(210, 30%, 88%);
+    --color-neutral-500: hsl(210, 15%, 50%);
+    --color-neutral-700: hsl(210, 20%, 30%);
+    --color-neutral-900: hsl(210, 25%, 12%);
+
+    /* Semantikk */
+    --color-background: var(--color-neutral-50);
+    --color-foreground: var(--color-neutral-900);
+    --color-muted: var(--color-neutral-500);
+    --color-border: hsl(210, 20%, 85%);
+  }
+
+  /* Per hobby (settes via data-hobby på container) */
+  [data-hobby="lys"] {
+    --color-accent: var(--color-lys-500);
+    --color-accent-light: var(--color-lys-200);
+    --color-accent-dark: var(--color-lys-700);
+    --color-glow: hsla(270, 80%, 60%, 0.3);
+  }
+  [data-hobby="smykker"] {
+    --color-accent: var(--color-smykker-500);
+    --color-accent-light: var(--color-smykker-200);
+    --color-accent-dark: var(--color-smykker-700);
+    --color-glow: hsla(180, 70%, 55%, 0.3);
+  }
+  ```
+
+  ## Typografi
+
+  ### Fonter
+  ```typescript
+  // src/app/layout.tsx
+  import { Playfair_Display, Inter } from 'next/font/google';
+
+  const serif = Playfair_Display({
+    subsets: ['latin'],
+    variable: '--font-serif',
+  });
+  const sans = Inter({
+    subsets: ['latin'],
+    variable: '--font-sans',
+  });
+  ```
+
+  ### Skala
+  - `text-xs` — 12px (meta)
+  - `text-sm` — 14px (sekundær tekst)
+  - `text-base` — 16px (brødtekst)
+  - `text-lg` — 18px (intro)
+  - `text-xl` — 20px (h5/h6)
+  - `text-2xl` — 24px (h4)
+  - `text-3xl` — 32px (h3)
+  - `text-4xl` — 40px (h2)
+  - `text-5xl` — 56px (h1)
+  - `text-6xl` — 72px (hero)
+
+  ### Bruk
+  - Headinger: serif (Playfair) for elegant, personlig følelse
+  - Brødtekst: sans (Inter) for lesbarhet
+  - Kode/monospace: system monospace
+
+  ## Spacing
+  Bruker Tailwind standardspacing (4px base). Konsekvent bruk:
+  - Inline padding i knapper: `px-4 py-2`
+  - Kort-padding: `p-4` til `p-6`
+  - Seksjon-margin: `my-8` til `my-16`
+  - Container: `max-w-6xl mx-auto px-4`
+
+  ## Radius
+  - Liten: `rounded-md` (6px) — chips, badges
+  - Standard: `rounded-lg` (8px) — knapper, inputs
+  - Kort: `rounded-xl` (12px) — post-kort
+  - Stor: `rounded-2xl` (16px) — dialoger, modaler
+
+  ## Skygger (subtile)
+  ```css
+  .shadow-soft { box-shadow: 0 4px 12px -2px hsla(0, 0%, 0%, 0.08); }
+  .shadow-glow {
+    box-shadow: 0 0 20px var(--color-glow);
+  }
+  ```
+
+  ## Knapper (shadcn + tilpasning)
+  - Primary: `bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-dark)]`
+  - Secondary: `border border-[var(--color-accent)] text-[var(--color-accent)] hover:bg-[var(--color-accent-light)]`
+  - Ghost: `hover:bg-[var(--color-accent-light)]`
+
+  ## Tilgjengelighet
+  - Kontrast-ratio minst 4.5:1 for brødtekst
+  - Fargevalg skal ikke være eneste indikator (bruk ikon + tekst også)
+  - Fokus-outline tydelig: `outline outline-2 outline-[var(--color-accent)]`
+
+  ## Akseptansekriterier
+  - Alle komponenter bruker CSS-variabler, ikke hardkodede farger
+  - Fargeaksent bytter automatisk ved `data-hobby`
+  - Kontrast-sjekk (WebAIM) bestås
+  - Fonter lastes uten FOUT (Next/Font)
+
+  ## Rules
+  - Bruk CSS-variabler via Tailwind: `bg-[var(--color-accent)]`
+  - Aldri hardkod hex-farger i komponenter
+  - Sjekk designet mot begge hobby-temaer
+  - Dark mode kan legges til senere — design variabler først

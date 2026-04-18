@@ -1,0 +1,179 @@
+name: ux-prinsipper
+description: UX principles from NN/g, Apple HIG, and content writing best practices
+version: 1.0.0
+tags: [ux, usability, design-principles, content, accessibility]
+
+instructions: |
+  # UX Prinsipper — Brukervennlighet og konvensjoner
+
+  ## Mål
+  Følge etablerte UX-konvensjoner så siden føles kjent og brukervennlig, ikke særegen bare for å være annerledes.
+  Kilder: Nielsen Norman Group, Apple Human Interface Guidelines, WCAG 2.2.
+
+  ## Nielsen Norman — 10 klassiske heuristikker
+
+  1. **Synlighet av systemstatus** — Vis hva som skjer (loading, lagret, sendt)
+  2. **Match mellom system og virkelig verden** — Bruk språk brukeren kjenner, ikke teknisk sjargong
+  3. **Brukerkontroll og frihet** — "Angre"/"Avbryt" på alle handlinger
+  4. **Konsistens og standarder** — Same mønster på tvers av siden
+  5. **Feilforebygging** — Valider input før innsending, bekreft destruktive handlinger
+  6. **Gjenkjennelse før hukommelse** — Vis alternativer, ikke tvinge brukeren huske
+  7. **Fleksibilitet og effektivitet** — Hurtigtaster, søk (Cmd+K)
+  8. **Estetisk og minimalistisk design** — Fjern det overflødige
+  9. **Hjelp å gjenkjenne og løse feil** — Klare feilmeldinger med løsning
+  10. **Hjelp og dokumentasjon** — Tilgjengelig hvis nødvendig
+
+  ## Apple HIG — kjerneprinsipper
+
+  - **Clarity** — Tekst leselig, ikoner tydelige, funksjoner åpenbare
+  - **Deference** — Design støtter innhold, tar ikke over
+  - **Depth** — Bruk lag og animasjon for å kommunisere hierarki — forsiktig!
+
+  **Content-first**: Det viktigste innholdet (bilder, tekst) skal være stjernen. UI eksisterer kun for å støtte det. Identifiser hva som er essensielt i hver visning og prioriter det.
+
+  ## Fleksible maler — unngå vanskelige layouts
+
+  **Regel**: Design maler som tilpasser seg innholdet, ikke innhold som tilpasser seg stive maler.
+
+  - **Test tidlig og ofte** — skaler opp ved behov, ikke forhåndsoptimaliser
+  - **Content-first approach** — skriv og velg bilder først, design deretter
+  - **Unngå rigid pixel-layouts** — bruk CSS Grid + Flexbox + percentage widths
+  - **Container queries (2023+)** — komponenter reagerer på sin egen containerstørrelse, ikke bare viewport
+  - **Fluid typography med `clamp()`** — `clamp(1rem, 2vw + 0.5rem, 1.5rem)` skalerer mellom min/max
+  - **Mobile-first** — start med minste skjerm, bygg opp
+
+  ```css
+  /* Fluid typografi */
+  h1 { font-size: clamp(2rem, 4vw + 1rem, 4rem); }
+
+  /* Container query */
+  @container (min-width: 400px) {
+    .card { grid-template-columns: 1fr 2fr; }
+  }
+  ```
+
+  ## Innhold — skriveregler
+
+  ### Invertert pyramide
+  Start med hovedpoenget, utdyp deretter. Fungerer fordi:
+  - Brukere skummer
+  - Kan stoppe når som helst og få med seg essensen
+  - Gjør søkeresultat bedre
+
+  ### Brevity
+  Skriv kort. Kutt ord som ikke tilfører:
+  - **Unngå**: "utnytte", "muliggjør at du kan", "veldig", "i dagens raskt skiftende verden", "sluttbruker"
+  - **Bruk**: "bruk", "lar deg", (slett), (slett), "bruker"
+
+  ### User-sentrert språk
+  - ✅ "Logg inn for å se innlegg" (handling-orientert)
+  - ❌ "Innlogging kreves for tilgang" (passiv/byråkratisk)
+
+  ### Bullet lists
+  - Start hvert punkt med samme ordklasse (verb, substantiv, etc.)
+  - Lik lengde på linjer
+  - Maks 7±2 punkter per liste
+  - Ikke bullet-punkter som er fulle setninger — del opp
+
+  ## UI-komponenter — konvensjoner
+
+  ### Input Controls
+  - **Checkboxes**: Flere valg, uavhengige
+  - **Radio buttons**: Gjensidig utelukkende valg, alltid vis valgt tilstand
+  - **Toggle switches**: På/av, umiddelbar effekt (ingen "Lagre"-knapp)
+  - **Input steppers**: Kun for små tallintervaller (1-20), ellers tall-input
+
+  ### Skjemaer
+  - Ett konsept per felt — del opp lange skjemaer
+  - **Label ALLTID over input** (top-aligned) — raskere utfylling, færre eye fixations, mobilvennlig
+  - Label er egen tekst, ikke bare placeholder (placeholder forsvinner når du skriver)
+  - Ingen capital letters i labels — vanskelig å lese
+  - Feilmelding til høyre for feltet eller rett under (studie viser preferanse for høyre)
+  - **Inline validering** — vis feedback mens brukeren skriver (✓ ikon når gyldig)
+  - Validér ved blur for *feil*, ved input for *suksess*
+  - "Lagrer..." / "Lagret" feedback
+  - Påkrevde felt markert med `*` eller "(påkrevd)" — konsekvent
+  - Submit-knapp viser progresjon: "Lagrer..." → "Lagret ✓"
+
+  ### Dialoger
+  - **Modal dialog**: Blokkerer alt annet — kun for viktige valg/destruktive handlinger
+  - **Non-modal**: Brukeren kan fortsette — for mindre notifications
+  - Alltid to knapper: bekreft + avbryt
+  - Bekreft-knapp er "action", avbryt er "cancel"
+  - Skriv spørsmålet tydelig: "Slett innlegg?" ikke "Er du sikker?"
+
+  ### Tooltips
+  - Kun for tilleggsinformasjon, aldri kritisk info
+  - 500ms delay før visning
+  - Ikke skjul kritisk info bak hover
+
+  ### Menyer
+  - Dropdown-menyer: maks 10 valg, ellers grupperte menyer eller søk
+  - Ikonene alene er ikke nok — vis tekst
+  - Aktiv tilstand tydelig markert
+
+  ### Ikoner
+  - Alltid tekst-label ved siden av (med mindre allment kjent: × for lukk, 🔍 for søk)
+  - Konsekvent stil (alle outline eller alle filled)
+  - `aria-label` hvis ikke synlig tekst
+
+  ### Lenker
+  - Underline eller annen farge enn brødtekst
+  - Beskrivende tekst — ikke "klikk her" eller "les mer"
+  - Åpne eksterne lenker i nytt vindu (`target="_blank"` + `rel="noopener"`)
+
+  ### Brødsmuler (breadcrumbs)
+  - Viser hierarki: Hjem > Lys > Tittel
+  - Hvert ledd er klikkbart untatt siste
+  - Bruk `›` eller `/` som separator
+
+  ### Søk
+  - Forstørrelsesglass-ikon alltid venstre
+  - Clear-knapp (×) når tekst er skrevet
+  - Keyboard shortcut (Cmd+K / Ctrl+K)
+  - Debounce input (300ms)
+
+  ### Feilmeldinger
+  - Plasser nær årsaken
+  - Spesifikt, ikke generisk ("Passord for kort — må være minst 8 tegn" i stedet for "Ugyldig")
+  - Aldri skyld på brukeren ("Du skrev feil")
+  - Tilby løsning ("Prøv igjen" eller "Kontakt support")
+
+  ### Loading-tilstander
+  - < 1 sek: ingenting
+  - 1-5 sek: spinner eller skeleton
+  - 5-10 sek: progress bar
+  - > 10 sek: forklaring + avbryt-knapp
+
+  ### Empty states
+  Alltid: illustrasjon + tittel + beskrivelse + handling.
+  Se `empty-feil-sider` skill.
+
+  ## Progressive disclosure
+  Vis kjerneinformasjon først. Detaljer under "Les mer", accordion, eller egen side.
+  Ikke dump alt på én gang — overvelder.
+
+  ## Fitts's lov
+  Større knapper = lettere å treffe. Plasser viktige handlinger i hjørner (ubegrenset klikk-område).
+
+  ## Hick's lov
+  Flere valg = lengre beslutningstid. Reduser valg til det nødvendige.
+
+  ## Referanser
+  - nngroup.com — artikler + kurs
+  - developer.apple.com/design/human-interface-guidelines
+  - material.io/design — for nyttige mønstre selv om vi ikke bruker MD
+  - w3.org/WAI/WCAG22 — tilgjengelighet
+
+  ## Akseptansekriterier (for hver ny UI-komponent)
+  - Følger en av de 10 heuristikkene
+  - Bruker standard-mønster (ikke oppfunnet nytt uten grunn)
+  - Tilgjengelig via tastatur
+  - Har tydelig feedback (hover, focus, active, disabled)
+  - Fungerer på mobil
+
+  ## Rules
+  - ALDRI bryt konvensjon uten god grunn — brukerne forventer det kjente
+  - ALLTID valider at nye komponenter har alle 4 tilstander (default, hover, focus, active, disabled)
+  - SPØRR: "Er denne handlingen reversibel?" — hvis ikke, bekreft
+  - Test med tastatur — kan du nå alle handlinger uten mus?

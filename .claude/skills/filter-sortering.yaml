@@ -1,0 +1,116 @@
+name: filter-sortering
+description: Filter and sort posts by tags, date, and other criteria
+version: 1.0.0
+tags: [ui, filtering, sorting]
+
+instructions: |
+  # Filter og Sortering
+
+  ## Mål
+  Besøkende kan filtrere innlegg etter tagger og sortere etter dato. Filter-state i URL for delbare lenker.
+
+  ## URL-parametere
+  - `?tag=soya-voks` — filtrer på én tag
+  - `?tag=soya-voks&tag=nybegynner` — AND-filter (begge tagger)
+  - `?sort=newest` (default) | `oldest` | `a-z`
+  - `?page=2` — paginering
+
+  ## Filter-bar komponent
+  ```tsx
+  // src/components/filter/FilterBar.tsx
+  'use client';
+  import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+
+  export function FilterBar({ tags }: Props) {
+    const router = useRouter();
+    const pathname = usePathname();
+    const params = useSearchParams();
+
+    const activeTags = params.getAll('tag');
+    const sort = params.get('sort') ?? 'newest';
+
+    function toggleTag(slug: string) {
+      const next = new URLSearchParams(params);
+      const current = next.getAll('tag');
+      next.delete('tag');
+      if (current.includes(slug)) {
+        current.filter((t) => t !== slug).forEach((t) => next.append('tag', t));
+      } else {
+        [...current, slug].forEach((t) => next.append('tag', t));
+      }
+      next.delete('page');
+      router.push(`${pathname}?${next}`);
+    }
+
+    return (
+      <div className="flex flex-wrap gap-2 items-center">
+        {tags.map((tag) => (
+          <TagChip
+            key={tag.id}
+            tag={tag}
+            active={activeTags.includes(tag.slug)}
+            onClick={() => toggleTag(tag.slug)}
+          />
+        ))}
+        <SortSelect value={sort} onChange={...} />
+        {activeTags.length > 0 && (
+          <button onClick={clearAll}>Tilbakestill</button>
+        )}
+      </div>
+    );
+  }
+  ```
+
+  ## Data-henting med filter
+  ```typescript
+  export async function getFilteredPosts({ hobby, tags, sort, page }: Params) {
+    const query = db.select().from(posts)
+      .where(and(
+        eq(posts.hobby, hobby),
+        eq(posts.published, true),
+        tags.length > 0
+          ? inArray(posts.id, sql`
+              SELECT post_id FROM posts_tags
+              WHERE tag_id IN (
+                SELECT id FROM tags WHERE slug IN ${tags}
+              )
+              GROUP BY post_id
+              HAVING COUNT(DISTINCT tag_id) = ${tags.length}
+            `)
+          : undefined,
+      ))
+      .orderBy(
+        sort === 'oldest' ? asc(posts.publishedAt)
+        : sort === 'a-z' ? asc(posts.title)
+        : desc(posts.publishedAt)
+      )
+      .limit(20)
+      .offset((page - 1) * 20);
+
+    return query;
+  }
+  ```
+
+  ## Aktive filter-indikator
+  Viser antall aktive filter-valg øverst:
+  "2 filter aktive · Tilbakestill"
+
+  ## Persist mellom navigering
+  Filter-state bevares i URL — bokmerker og delbare lenker fungerer.
+  Tilbake-knappen går til forrige filter-tilstand.
+
+  ## Mobil-visning
+  Filter-bar kollapses til en "Filter (2)"-knapp som åpner en bottom-sheet med alle valg.
+
+  ## Akseptansekriterier
+  - Klikk på tag filtrerer lista umiddelbart
+  - Filter vises i URL
+  - "Tilbakestill" fjerner alle filter
+  - Sortering endrer rekkefølge uten reload
+  - Mobilt har filter-knapp i stedet for chip-bar
+
+  ## Rules
+  - Filter-state i URL, ikke i client state
+  - Bruk `router.push` (soft navigation) — ikke full reload
+  - Reset page til 1 når filter endres
+  - Tom filter-liste viser empty-state med illustrasjon

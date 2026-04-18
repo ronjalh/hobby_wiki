@@ -1,0 +1,89 @@
+name: github-setup
+description: GitHub repository setup, branch strategy, and Vercel CI/CD integration
+version: 1.0.0
+tags: [github, cicd, deployment, git]
+
+instructions: |
+  # GitHub Setup — Repo og CI/CD
+
+  ## Mål
+  Kode lagret på GitHub under Ronjas konto, automatisk deploy til Vercel ved push til `main`.
+
+  ## Steg
+
+  ### 1. Lokal git-init
+  ```bash
+  cd hobby_wiki
+  git init
+  git add .
+  git commit -m "Initial commit"
+  ```
+
+  ### 2. Opprett repo på GitHub
+  Bruk `gh` CLI eller nettsiden. Navnet bør være `hobby-wiki`.
+  ```bash
+  gh repo create hobby-wiki --private --source=. --push
+  ```
+  Eller manuelt:
+  - github.com → New repository → hobby-wiki
+  - Private (bytt senere hvis offentlig ønsket)
+  - Ingen README/license (vi har alt lokalt)
+  - `git remote add origin git@github.com:<bruker>/hobby-wiki.git`
+  - `git push -u origin main`
+
+  ### 3. Branch-strategi
+  - `main` — produksjon, auto-deploy til Vercel
+  - `dev` — integrasjon, auto-deploy til preview URL
+  - Feature-branches: `feat/pill-valg`, `fix/bilde-upload`
+  - Merge via PR (squash commits)
+
+  ### 4. Vercel-integrasjon
+  - Logg inn på vercel.com med GitHub
+  - Import prosjekt `hobby-wiki`
+  - Root directory: `./`
+  - Framework: Next.js (auto-detektert)
+  - Environment Variables: sett alle fra `.env.local`
+  - Deploy
+
+  ### 5. .gitignore (viktig)
+  ```
+  node_modules
+  .next
+  .env
+  .env.local
+  .env.*.local
+  *.log
+  .DS_Store
+  coverage
+  .vercel
+  ```
+
+  ### 6. GitHub Actions (valgfritt men anbefalt)
+  Opprett `.github/workflows/ci.yml`:
+  ```yaml
+  name: CI
+  on: [push, pull_request]
+  jobs:
+    test:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - uses: actions/setup-node@v4
+          with:
+            node-version: 24
+        - run: npm ci
+        - run: npm run lint
+        - run: npm run test
+  ```
+
+  ## Akseptansekriterier
+  - Repo `hobby-wiki` finnes på GitHub
+  - Push til `main` utløser Vercel-deploy
+  - Preview URL genereres for PR-er
+  - `.env.local` er IKKE i repoet (sjekk med `git ls-files | grep env`)
+
+  ## Rules
+  - NEVER push `.env` eller secrets — sjekk `git status` før commit
+  - NEVER force-push til `main`
+  - Secrets kun i Vercel env vars og GitHub Secrets (for Actions)
+  - Commit-meldinger på norsk eller engelsk, konsekvent innen repoet

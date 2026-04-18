@@ -1,0 +1,131 @@
+name: vercel-blob-bilder
+description: Image storage on Vercel Blob with upload, retrieval, and cleanup
+version: 1.0.0
+tags: [images, storage, vercel-blob, upload]
+
+instructions: |
+  # Vercel Blob — Bildelagring
+
+  ## Stack
+  - `@vercel/blob` for opplasting og henting
+  - `sharp` for komprimering før opplasting (se `bilde-komprimering`)
+  - 1 GB gratis tier — ~3000 bilder med aggressiv komprimering
+
+  ## Oppsett
+
+  ### 1. Token
+  Vercel Dashboard → Storage → Create Blob Store → "hobby-wiki-images"
+  Kopier `BLOB_READ_WRITE_TOKEN` til env vars.
+
+  ### 2. Upload-funksjon
+  ```typescript
+  // src/lib/blob/upload.ts
+  import { put } from '@vercel/blob';
+  import sharp from 'sharp';
+
+  export async function uploadImage(
+    file: File,
+    folder: 'lys' | 'smykker' | 'misc'
+  ): Promise<{ url: string; width: number; height: number }> {
+    const buffer = Buffer.from(await file.arrayBuffer());
+
+    // Komprimer + konverter til WebP (se bilde-komprimering skill)
+    const optimized = await sharp(buffer)
+      .resize(1600, 1600, { fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 82 })
+      .toBuffer();
+
+    const metadata = await sharp(optimized).metadata();
+
+    const { url } = await put(
+      `${folder}/${Date.now()}-${crypto.randomUUID()}.webp`,
+      optimized,
+      {
+        access: 'public',
+        contentType: 'image/webp',
+      }
+    );
+
+    return {
+      url,
+      width: metadata.width ?? 0,
+      height: metadata.height ?? 0,
+    };
+  }
+  ```
+
+  ### 3. Opplastings-endpoint (Server Action)
+  ```typescript
+  'use server';
+  import { requireAdmin } from '@/lib/auth/roles';
+  import { uploadImage } from '@/lib/blob/upload';
+  import { db } from '@/db';
+  import { images } from '@/db/schema';
+
+  export async function uploadPostImage(
+    formData: FormData,
+    postId: string,
+    hobby: 'lys' | 'smykker'
+  ) {
+    await requireAdmin();
+    const file = formData.get('image') as File;
+
+    if (!file || file.size === 0) throw new Error('Ingen fil');
+    if (file.size > 10 * 1024 * 1024) throw new Error('Fil for stor (maks 10 MB)');
+    if (!file.type.startsWith('image/')) throw new Error('Må være et bilde');
+
+    const { url, width, height } = await uploadImage(file, hobby);
+
+    await db.insert(images).values({
+      postId,
+      url,
+      width,
+      height,
+    });
+
+    return { url, width, height };
+  }
+  ```
+
+  ### 4. Sletting
+  ```typescript
+  import { del } from '@vercel/blob';
+
+  export async function deleteImage(url: string) {
+    await requireAdmin();
+    await del(url);
+    await db.delete(images).where(eq(images.url, url));
+  }
+  ```
+
+  ## Visning
+  ```tsx
+  import Image from 'next/image';
+
+  <Image
+    src={image.url}
+    alt={image.altText ?? ''}
+    width={image.width}
+    height={image.height}
+    className="rounded-lg"
+  />
+  ```
+
+  Next.js sin `Image` gjør automatisk lazy-loading og responsive srcset.
+  Legg til `hobby-wiki-*.vercel-storage.com` i `next.config.ts` under `images.remotePatterns`.
+
+  ## Cleanup
+  - Når et innlegg slettes, slett alle tilhørende bilder fra Blob
+  - Periodisk cron (senere): slett orphan-bilder (ingen postId, eldre enn 24t)
+
+  ## Akseptansekriterier
+  - Opplastet bilde finnes i Blob og i `images`-tabellen
+  - Bildestørrelse < 500 KB etter komprimering
+  - Sletting av innlegg sletter både DB-rad og Blob-objekt
+  - Ikke-admins kan ikke laste opp
+
+  ## Rules
+  - ALLE opplastinger går via Server Action — aldri direkte fra klient
+  - ALLE bilder komprimeres og konverteres til WebP før opplasting
+  - Maks 10 MB input-fil, resultat skal være < 500 KB
+  - Slett Blob-objekter når tilhørende post slettes
