@@ -8,39 +8,24 @@ export const metadata: Metadata = {
 
 export default function StartPage() {
   return (
-    <div
-      className="min-h-[calc(100vh-160px)] flex flex-col items-center justify-center px-4 py-16 mx-4 rounded-3xl my-4"
-      style={{
-        background: `
-          radial-gradient(circle at 25% 30%, hsl(270, 70%, 30%) 0%, transparent 55%),
-          radial-gradient(circle at 75% 40%, hsl(180, 60%, 25%) 0%, transparent 55%),
-          radial-gradient(circle at 50% 80%, hsl(230, 70%, 20%) 0%, transparent 60%),
-          linear-gradient(135deg, hsl(260, 60%, 12%), hsl(200, 60%, 10%))
-        `,
-        color: 'white',
-      }}>
+    <div className="min-h-[calc(100vh-160px)] flex flex-col items-center justify-center px-4 py-16">
       <div className="text-center space-y-12 max-w-4xl">
-        <p className="text-sm uppercase tracking-widest text-white/70">
+        <p className="text-sm uppercase tracking-widest text-muted-foreground">
           Velg din verden
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
           <Link
             href="/lys"
-            className="group relative block aspect-[3/4] rounded-3xl overflow-hidden border border-white/20 hover:border-white/40 backdrop-blur-md transition-all duration-500 hover:scale-[1.03]"
-            style={{
-              background: `
-                radial-gradient(circle at 50% 30%, hsla(270, 80%, 60%, 0.35) 0%, transparent 60%),
-                linear-gradient(135deg, hsla(270, 60%, 40%, 0.25), hsla(280, 50%, 20%, 0.25))
-              `,
-            }}
+            data-hobby="lys"
+            className="group relative block aspect-[3/4] rounded-3xl overflow-hidden border border-[var(--color-hobby-accent)]/25 bg-[var(--color-hobby-accent-light)]/15 hover:border-[var(--color-hobby-accent)]/60 hover:bg-[var(--color-hobby-accent-light)]/25 transition-all duration-500 hover:scale-[1.03]"
           >
             <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
-              <div className="text-6xl mb-4 drop-shadow-lg">🕯️</div>
-              <h2 className="text-3xl md:text-4xl font-serif text-white">
+              <div className="text-6xl mb-4">🕯️</div>
+              <h2 className="text-3xl md:text-4xl font-serif text-[var(--color-hobby-accent-dark)]">
                 Lysstøping
               </h2>
-              <p className="mt-3 text-sm text-white/75">
+              <p className="mt-3 text-sm text-muted-foreground">
                 Voks, duft og flammer
               </p>
             </div>
@@ -48,27 +33,22 @@ export default function StartPage() {
 
           <Link
             href="/smykker"
-            className="group relative block aspect-[3/4] rounded-3xl overflow-hidden border border-white/20 hover:border-white/40 backdrop-blur-md transition-all duration-500 hover:scale-[1.03]"
-            style={{
-              background: `
-                radial-gradient(circle at 50% 30%, hsla(180, 70%, 55%, 0.35) 0%, transparent 60%),
-                linear-gradient(135deg, hsla(180, 60%, 40%, 0.25), hsla(200, 50%, 20%, 0.25))
-              `,
-            }}
+            data-hobby="smykker"
+            className="group relative block aspect-[3/4] rounded-3xl overflow-hidden border border-[var(--color-hobby-accent)]/25 bg-[var(--color-hobby-accent-light)]/15 hover:border-[var(--color-hobby-accent)]/60 hover:bg-[var(--color-hobby-accent-light)]/25 transition-all duration-500 hover:scale-[1.03]"
           >
             <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
-              <div className="text-6xl mb-4 drop-shadow-lg">💎</div>
-              <h2 className="text-3xl md:text-4xl font-serif text-white">
+              <div className="text-6xl mb-4">💎</div>
+              <h2 className="text-3xl md:text-4xl font-serif text-[var(--color-hobby-accent-dark)]">
                 Smykkelaging
               </h2>
-              <p className="mt-3 text-sm text-white/75">
+              <p className="mt-3 text-sm text-muted-foreground">
                 Sølv, perler og stein
               </p>
             </div>
           </Link>
         </div>
 
-        <p className="text-xs text-white/50 italic">
+        <p className="text-xs text-muted-foreground italic">
           (Fullverdig pill-animasjon kommer i Fase 6)
         </p>
       </div>
