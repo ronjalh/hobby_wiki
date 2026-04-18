@@ -32,6 +32,7 @@ export default async function RedigerInnleggPage({ params }: Props) {
         initialTitle={post.title}
         initialExcerpt={post.excerpt ?? ''}
         initialContent={post.content}
+        initialCoverImageUrl={post.coverImageUrl}
         initialPublished={post.published}
       />
     </div>

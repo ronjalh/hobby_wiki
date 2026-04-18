@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Flame, Gem } from 'lucide-react';
 import { savePost } from '@/app/admin/actions';
 import { PostEditor } from '@/components/editor/PostEditor';
+import { CoverImageUpload } from '@/components/admin/CoverImageUpload';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -15,6 +16,7 @@ type Props = {
   initialTitle?: string;
   initialExcerpt?: string;
   initialContent?: string;
+  initialCoverImageUrl?: string | null;
   initialPublished?: boolean;
 };
 
@@ -24,6 +26,7 @@ export function PostForm({
   initialTitle = '',
   initialExcerpt = '',
   initialContent = '',
+  initialCoverImageUrl = null,
   initialPublished = false,
 }: Props) {
   const router = useRouter();
@@ -35,6 +38,9 @@ export function PostForm({
   const [title, setTitle] = useState(initialTitle);
   const [excerpt, setExcerpt] = useState(initialExcerpt);
   const [content, setContent] = useState(initialContent);
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(
+    initialCoverImageUrl,
+  );
   const [error, setError] = useState<string | null>(null);
 
   function handleSubmit(publish: boolean) {
@@ -60,6 +66,7 @@ export function PostForm({
           title: title.trim(),
           excerpt: excerpt.trim() || undefined,
           content,
+          coverImageUrl: coverImageUrl ?? undefined,
           published: publish,
         });
         router.push(`/admin/innlegg?saved=${result.slug}`);
@@ -107,6 +114,18 @@ export function PostForm({
         />
       </div>
 
+      {/* Cover-bilde */}
+      <div>
+        <label className="block text-sm font-medium mb-2">
+          Hovedbilde <span className="text-muted-foreground font-normal">(valgfritt)</span>
+        </label>
+        <CoverImageUpload
+          value={coverImageUrl}
+          onChange={setCoverImageUrl}
+          hobby={hobby}
+        />
+      </div>
+
       {/* Excerpt */}
       <div>
         <label htmlFor="excerpt" className="block text-sm font-medium mb-2">
@@ -129,7 +148,11 @@ export function PostForm({
       {/* Editor */}
       <div>
         <label className="block text-sm font-medium mb-2">Innhold</label>
-        <PostEditor initialContent={initialContent} onChange={setContent} />
+        <PostEditor
+          initialContent={initialContent}
+          onChange={setContent}
+          hobby={hobby}
+        />
       </div>
 
       {/* Error */}

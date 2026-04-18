@@ -9,13 +9,31 @@ type Props = {
   publishedAt?: Date | null;
 };
 
-export function PostCard({ hobby, slug, title, excerpt, publishedAt }: Props) {
+export function PostCard({
+  hobby,
+  slug,
+  title,
+  excerpt,
+  coverImageUrl,
+  publishedAt,
+}: Props) {
   return (
     <Link
       href={`/${hobby}/${slug}`}
       className="group block rounded-2xl border border-[var(--color-hobby-accent-light)] bg-background hover:border-[var(--color-hobby-accent)] hover:shadow-sm transition-all overflow-hidden"
     >
-      <div className="p-6">
+      {coverImageUrl && (
+        <div className="aspect-[4/3] overflow-hidden bg-muted">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={coverImageUrl}
+            alt=""
+            className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+            loading="lazy"
+          />
+        </div>
+      )}
+      <div className="p-5">
         <h3 className="text-xl font-serif leading-tight group-hover:text-[var(--color-hobby-accent)] transition-colors">
           {title}
         </h3>

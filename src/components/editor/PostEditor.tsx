@@ -3,7 +3,7 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import {
   Bold,
   Italic,
@@ -14,15 +14,22 @@ import {
   Quote,
   Undo2,
   Redo2,
+  ImagePlus,
+  Loader2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { uploadImage } from '@/app/admin/upload-actions';
 
 type Props = {
   initialContent?: string;
   onChange: (html: string) => void;
+  hobby?: 'lys' | 'smykker';
 };
 
-export function PostEditor({ initialContent = '', onChange }: Props) {
+export function PostEditor({ initialContent = '', onChange, hobby }: Props) {
+  const [uploading, startUpload] = useTransition();
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -47,6 +54,28 @@ export function PostEditor({ initialContent = '', onChange }: Props) {
       editor.commands.setContent(initialContent);
     }
   }, [editor, initialContent]);
+
+  function handleImageFile(file: File) {
+    if (!editor) return;
+    setUploadError(null);
+    startUpload(async () => {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('folder', hobby ?? 'misc');
+        const result = await uploadImage(formData);
+        editor.chain().focus().setImage({ src: result.url, alt: '' }).run();
+      } catch (e) {
+        setUploadError(e instanceof Error ? e.message : 'Opplasting feilet');
+      }
+    });
+  }
+
+  function handleImageInput(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) handleImageFile(file);
+    e.target.value = '';
+  }
 
   if (!editor) {
     return (
@@ -129,9 +158,34 @@ export function PostEditor({ initialContent = '', onChange }: Props) {
         >
           <Redo2 className="w-4 h-4" />
         </ToolbarButton>
+        <Divider />
+        <ToolbarButton
+          onClick={() => imageInputRef.current?.click()}
+          label="Sett inn bilde"
+          disabled={uploading}
+        >
+          {uploading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <ImagePlus className="w-4 h-4" />
+          )}
+        </ToolbarButton>
+        <input
+          ref={imageInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          onChange={handleImageInput}
+          className="sr-only"
+        />
       </div>
 
       <EditorContent editor={editor} />
+
+      {uploadError && (
+        <p role="alert" className="text-sm text-destructive px-4 py-2 border-t">
+          {uploadError}
+        </p>
+      )}
     </div>
   );
 }
