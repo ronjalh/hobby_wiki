@@ -44,7 +44,7 @@ export default async function Home() {
       {featured.length > 0 && (
         <section className="mb-20 space-y-6">
           <h2 className="text-3xl font-serif text-center">Fremhevede prosjekter</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {featured.map((post) => (
               <div key={post.id} data-hobby={post.hobby}>
                 <PostCard

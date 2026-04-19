@@ -24,7 +24,7 @@ export function PostCard({
       className="group block rounded-2xl border border-[var(--color-hobby-accent-light)] bg-background hover:border-[var(--color-hobby-accent)] hover:shadow-sm transition-all overflow-hidden"
     >
       {coverImageUrl && (
-        <div className="aspect-[4/3] overflow-hidden bg-muted">
+        <div className="aspect-[3/2] overflow-hidden bg-muted">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={coverImageUrl}
