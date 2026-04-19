@@ -4,7 +4,6 @@ import sharp from 'sharp';
 const MAX_WIDTH = 1600;
 const QUALITY = 82;
 const MAX_INPUT_BYTES = 15 * 1024 * 1024;
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 export type UploadResult = {
   url: string;
@@ -17,8 +16,9 @@ export function validateImageFile(file: File) {
   if (file.size > MAX_INPUT_BYTES) {
     throw new Error('Bildet er for stort (maks 15 MB)');
   }
-  if (!ALLOWED_TYPES.includes(file.type)) {
-    throw new Error('Må være JPEG, PNG, WebP eller GIF');
+  // Aksepter alle image/* MIME-typer — sharp håndterer JPEG, PNG, WebP, GIF, AVIF, TIFF m.fl.
+  if (!file.type.startsWith('image/')) {
+    throw new Error(`Filen må være et bilde (fikk "${file.type || 'ukjent type'}")`);
   }
 }
 

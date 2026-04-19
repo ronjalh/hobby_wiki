@@ -173,7 +173,7 @@ export function PostEditor({ initialContent = '', onChange, hobby }: Props) {
         <input
           ref={imageInputRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif"
+          accept="image/*"
           onChange={handleImageInput}
           className="sr-only"
         />

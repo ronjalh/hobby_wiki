@@ -104,7 +104,7 @@ export function CoverImageUpload({ value, onChange, hobby }: Props) {
         <input
           ref={inputRef}
           type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif"
+          accept="image/*"
           onChange={handleInputChange}
           disabled={pending}
           className="sr-only"
