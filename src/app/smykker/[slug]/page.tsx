@@ -40,13 +40,15 @@ export default async function SmykkerPostPage({ params }: Props) {
   return (
     <article className="pb-20">
       {post.coverImageUrl && (
-        <div className="w-full aspect-[16/9] md:aspect-[21/9] max-h-[560px] overflow-hidden bg-muted">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={post.coverImageUrl}
-            alt=""
-            className="w-full h-full object-cover"
-          />
+        <div className="w-full md:px-4 md:mx-auto md:max-w-4xl md:mt-6">
+          <div className="aspect-[16/9] max-h-[440px] overflow-hidden bg-muted md:rounded-2xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post.coverImageUrl}
+              alt=""
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
       )}
 
