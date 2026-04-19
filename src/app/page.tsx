@@ -47,7 +47,7 @@ export default async function Home() {
               <Link
                 href="/start"
                 aria-label="Utforsk — velg verden"
-                className="group flex flex-col items-center gap-3"
+                className="group relative flex flex-col items-center gap-3"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -59,6 +59,24 @@ export default async function Home() {
                 <p className="font-serif text-2xl text-[var(--color-hobby-accent-dark)] group-hover:text-[var(--color-hobby-accent)] transition-colors">
                   Utforsk
                 </p>
+
+                {/* Buet stiplet rosa pil fra Utforsk opp til boken */}
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 80 110"
+                  className="absolute -left-16 md:-left-20 bottom-2 w-16 md:w-20 h-24 md:h-28 pointer-events-none text-[var(--color-hobby-accent)] -scale-x-100"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path
+                    d="M 12 95 Q 45 65, 30 20"
+                    strokeDasharray="4 5"
+                  />
+                  <path d="M 20 26 L 30 20 L 38 28" />
+                </svg>
               </Link>
             </div>
           </div>
