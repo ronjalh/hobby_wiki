@@ -60,11 +60,11 @@ export default async function Home() {
                   Utforsk
                 </p>
 
-                {/* Buet stiplet rosa pil fra Utforsk opp til boken */}
+                {/* Buet stiplet rosa pil fra Utforsk opp mot boken */}
                 <svg
                   aria-hidden="true"
                   viewBox="0 0 80 110"
-                  className="absolute -left-16 md:-left-20 bottom-2 w-16 md:w-20 h-24 md:h-28 pointer-events-none text-[var(--color-hobby-accent)] -scale-x-100"
+                  className="absolute -left-20 md:-left-24 bottom-1 w-20 md:w-24 h-28 md:h-32 pointer-events-none text-[var(--color-hobby-accent)]"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -72,10 +72,10 @@ export default async function Home() {
                   strokeLinejoin="round"
                 >
                   <path
-                    d="M 12 95 Q 45 65, 30 20"
+                    d="M 15 95 Q 5 35, 68 22"
                     strokeDasharray="4 5"
                   />
-                  <path d="M 20 26 L 30 20 L 38 28" />
+                  <path d="M 60 14 L 68 22 L 60 30" />
                 </svg>
               </Link>
             </div>

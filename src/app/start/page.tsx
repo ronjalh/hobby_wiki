@@ -7,6 +7,12 @@ export const metadata: Metadata = {
   description: 'Velg mellom lysstøping, smykkelaging og håndarbeid.',
 };
 
+const BUTTON_IMAGES: Record<string, string> = {
+  lys: '/lys-button.png',
+  smykker: '/smykker-button.png',
+  handarbeid: '/handarbeid-button.png',
+};
+
 export default function StartPage() {
   return (
     <div className="min-h-[calc(100vh-160px)] flex flex-col items-center justify-center px-4 py-16">
@@ -15,7 +21,7 @@ export default function StartPage() {
           Velg din verden
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 items-end justify-items-center">
           {HOBBY_KEYS.map((key) => {
             const config = HOBBIES[key];
             return (
@@ -23,14 +29,21 @@ export default function StartPage() {
                 key={key}
                 href={`/${key}`}
                 data-hobby={key}
-                className="group relative block aspect-[3/4] rounded-3xl overflow-hidden border border-[var(--color-hobby-accent)]/25 bg-[var(--color-hobby-accent-light)]/15 hover:border-[var(--color-hobby-accent)]/60 hover:bg-[var(--color-hobby-accent-light)]/25 transition-all duration-500 hover:scale-[1.03]"
+                aria-label={config.label}
+                className="group flex flex-col items-center gap-3"
               >
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
-                  <div className="text-6xl mb-4">{config.emoji}</div>
-                  <h2 className="text-2xl md:text-3xl font-serif text-[var(--color-hobby-accent-dark)]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={BUTTON_IMAGES[key]}
+                  alt=""
+                  aria-hidden="true"
+                  className="w-48 h-48 md:w-56 md:h-56 object-contain transition-all duration-300 group-hover:scale-110 group-hover:rotate-[-2deg] drop-shadow-md"
+                />
+                <div className="text-center">
+                  <h2 className="text-2xl md:text-3xl font-serif text-[var(--color-hobby-accent-dark)] group-hover:text-[var(--color-hobby-accent)] transition-colors">
                     {config.label}
                   </h2>
-                  <p className="mt-3 text-sm text-muted-foreground">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {config.description}
                   </p>
                 </div>
@@ -38,10 +51,6 @@ export default function StartPage() {
             );
           })}
         </div>
-
-        <p className="text-xs text-muted-foreground italic">
-          (Fullverdig pill-animasjon kommer i Fase 6)
-        </p>
       </div>
     </div>
   );
