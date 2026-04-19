@@ -14,8 +14,8 @@ type Props = {
 export function HeaderNav({ isLoggedIn, isAdmin }: Props) {
   const { scrollY } = useScroll();
   const height = useTransform(scrollY, [0, 120], [72, 56]);
-  const blur = useTransform(scrollY, [0, 120], [6, 14]);
-  const bgOpacity = useTransform(scrollY, [0, 120], [0.6, 0.85]);
+  const blur = useTransform(scrollY, [0, 120], [10, 18]);
+  const bgOpacity = useTransform(scrollY, [0, 120], [0.35, 0.6]);
 
   const pathname = usePathname();
   const hobby = pathname.startsWith('/lys')

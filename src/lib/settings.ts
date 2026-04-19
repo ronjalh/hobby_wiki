@@ -5,6 +5,7 @@ export const SETTING_KEYS = {
   heroSubtitle: 'hero_subtitle',
   aboutHeading: 'about_heading',
   aboutBody: 'about_body',
+  highlightNote: 'highlight_note',
 } as const;
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS];
@@ -16,4 +17,6 @@ export const DEFAULT_SETTINGS: Record<SettingKey, string> = {
   [SETTING_KEYS.aboutHeading]: 'Om meg',
   [SETTING_KEYS.aboutBody]:
     'Her kommer teksten om deg. Rediger fra admin → Forside.',
+  [SETTING_KEYS.highlightNote]:
+    'Mine to favoritter\nakkurat nå ✨',
 };

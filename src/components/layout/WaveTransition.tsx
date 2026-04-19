@@ -59,14 +59,8 @@ export function WaveTransition() {
   const paletteKey = context ?? 'neutral';
   const colors = PALETTES[paletteKey];
 
-  const topBg = BG_TOP[paletteKey];
-
   return (
-    <div
-      className="relative w-full"
-      style={{ background: topBg }}
-      aria-hidden="true"
-    >
+    <div className="relative w-full" aria-hidden="true">
       <svg
         className="block w-full"
         viewBox="0 0 1200 240"

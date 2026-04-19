@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { and, desc, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { posts } from '@/db/schema';
-import { PostCard } from '@/components/post/PostCard';
+import { PolaroidCard } from '@/components/post/PolaroidCard';
 
 export const metadata: Metadata = {
   title: 'Nål og tråd',
@@ -31,14 +31,13 @@ export default async function HandarbeidPage() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
           {allPosts.map((post) => (
-            <PostCard
+            <PolaroidCard
               key={post.id}
               hobby="handarbeid"
               slug={post.slug}
               title={post.title}
-              excerpt={post.excerpt}
               coverImageUrl={post.coverImageUrl}
               publishedAt={post.publishedAt}
             />

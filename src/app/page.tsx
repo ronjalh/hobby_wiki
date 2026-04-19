@@ -4,14 +4,18 @@ import { db } from '@/db';
 import { posts, instagramPosts } from '@/db/schema';
 import { SETTING_KEYS } from '@/lib/settings';
 import { getAllSettings } from '@/lib/settings-db';
-import { FeaturedCarousel } from '@/components/FeaturedCarousel';
+import { PolaroidCard } from '@/components/post/PolaroidCard';
+import { HighlightedPolaroid } from '@/components/post/HighlightedPolaroid';
+import { HighlightNote } from '@/components/post/HighlightNote';
 import { InstagramEmbeds } from '@/components/InstagramEmbeds';
 import { SectionDivider } from '@/components/layout/SectionDivider';
+import type { Hobby } from '@/lib/hobbies';
 
 const BG = {
   hero: 'hsl(340, 40%, 98%)',
   featured: 'hsl(340, 30%, 94%)',
   instagram: 'hsl(30, 40%, 97%)',
+  about: 'hsl(40, 40%, 96%)',
 };
 
 export default async function Home() {
@@ -27,11 +31,9 @@ export default async function Home() {
     }),
   ]);
 
-  const lastColoredBg = igPosts.length > 0
-    ? BG.instagram
-    : featured.length > 0
-      ? BG.featured
-      : BG.hero;
+  const topHighlights = featured.slice(0, 2);
+  const restFeatured = featured.slice(2);
+  const hasHighlights = topHighlights.length > 0;
 
   return (
     <div>
@@ -48,7 +50,7 @@ export default async function Home() {
             <div className="pt-4 flex justify-center">
               <Link
                 href="/start"
-                className="rounded-2xl border border-neutral-200 bg-background px-10 py-6 text-center transition-colors hover:bg-neutral-50"
+                className="rounded-2xl border-2 border-[var(--color-hobby-accent-light)] bg-white px-10 py-6 text-center transition-all hover:border-[var(--color-hobby-accent)] hover:bg-[var(--color-hobby-accent-light)]/30 hover:-translate-y-0.5"
               >
                 <p className="font-serif text-xl mb-1">Start eventyret</p>
                 <p className="text-sm text-muted-foreground">
@@ -60,7 +62,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Fremhevede innlegg */}
+      {/* Fremhevede prosjekter */}
       {featured.length > 0 && (
         <>
           <SectionDivider
@@ -69,21 +71,70 @@ export default async function Home() {
             variant="gentle"
           />
           <section style={{ background: BG.featured }}>
-            <div className="container mx-auto max-w-5xl px-4 py-10">
-              <h2 className="text-3xl font-serif text-center mb-8">
+            <div className="container mx-auto max-w-5xl px-4 py-12">
+              <h2 className="text-3xl font-serif text-center mb-10">
                 Fremhevede prosjekter
               </h2>
-              <FeaturedCarousel
-                posts={featured.map((p) => ({
-                  id: p.id,
-                  hobby: p.hobby,
-                  slug: p.slug,
-                  title: p.title,
-                  excerpt: p.excerpt,
-                  coverImageUrl: p.coverImageUrl,
-                  publishedAt: p.publishedAt,
-                }))}
-              />
+
+              {/* Top 2 highlights + note */}
+              {hasHighlights && (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 items-center justify-items-center mb-12 pt-6">
+                  {topHighlights[0] && (
+                    <div data-hobby={topHighlights[0].hobby}>
+                      <HighlightedPolaroid
+                        hobby={topHighlights[0].hobby as Hobby}
+                        slug={topHighlights[0].slug}
+                        title={topHighlights[0].title}
+                        coverImageUrl={topHighlights[0].coverImageUrl}
+                        publishedAt={topHighlights[0].publishedAt}
+                        rotation={-3}
+                      />
+                    </div>
+                  )}
+                  {topHighlights[1] ? (
+                    <div data-hobby={topHighlights[1].hobby}>
+                      <HighlightedPolaroid
+                        hobby={topHighlights[1].hobby as Hobby}
+                        slug={topHighlights[1].slug}
+                        title={topHighlights[1].title}
+                        coverImageUrl={topHighlights[1].coverImageUrl}
+                        publishedAt={topHighlights[1].publishedAt}
+                        rotation={2}
+                      />
+                    </div>
+                  ) : (
+                    <div />
+                  )}
+                  <div className="sm:col-span-1">
+                    <HighlightNote
+                      text={settings[SETTING_KEYS.highlightNote]}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Resten som mindre polaroids */}
+              {restFeatured.length > 0 && (
+                <div className="pt-6 border-t border-[var(--color-hobby-accent)]/10">
+                  <h3 className="text-center text-sm uppercase tracking-widest text-muted-foreground mb-8">
+                    Flere prosjekter
+                  </h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+                    {restFeatured.map((post) => (
+                      <div key={post.id} data-hobby={post.hobby}>
+                        <PolaroidCard
+                          hobby={post.hobby as Hobby}
+                          slug={post.slug}
+                          title={post.title}
+                          coverImageUrl={post.coverImageUrl}
+                          publishedAt={post.publishedAt}
+                          size="sm"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </section>
         </>
@@ -121,17 +172,19 @@ export default async function Home() {
         </>
       )}
 
-      {/* Liten bølge før Om meg — går fra siste fargede seksjon til hvit */}
-      {(featured.length > 0 || igPosts.length > 0) && (
-        <SectionDivider
-          fromColor={lastColoredBg}
-          toColor={BG.hero}
-          variant="gentle"
-        />
-      )}
-
-      {/* Om meg — arver sidens default bakgrunn */}
-      <section>
+      {/* Om meg */}
+      <SectionDivider
+        fromColor={
+          igPosts.length > 0
+            ? BG.instagram
+            : featured.length > 0
+              ? BG.featured
+              : BG.hero
+        }
+        toColor={BG.about}
+        variant="gentle"
+      />
+      <section style={{ background: BG.about }}>
         <div className="container mx-auto max-w-3xl px-4 py-16">
           <h2 className="text-3xl font-serif mb-6">
             {settings[SETTING_KEYS.aboutHeading]}

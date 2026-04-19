@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Playfair_Display, Inter } from 'next/font/google';
+import { Playfair_Display, Inter, Caveat } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -14,6 +14,12 @@ const serif = Playfair_Display({
 
 const sans = Inter({
   variable: '--font-sans',
+  subsets: ['latin'],
+  display: 'swap',
+});
+
+const handwritten = Caveat({
+  variable: '--font-handwritten',
   subsets: ['latin'],
   display: 'swap',
 });
@@ -41,7 +47,7 @@ export default function RootLayout({
   return (
     <html
       lang="nb"
-      className={`${serif.variable} ${sans.variable} h-full antialiased`}
+      className={`${serif.variable} ${sans.variable} ${handwritten.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
         <SkipLink />

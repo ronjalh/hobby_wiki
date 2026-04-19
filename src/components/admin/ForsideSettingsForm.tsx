@@ -58,6 +58,13 @@ export function ForsideSettingsForm({ initial }: Props) {
         multiline
         rows={6}
       />
+      <Field
+        label="Notat ved siden av highlights"
+        value={values[SETTING_KEYS.highlightNote]}
+        onChange={(v) => update(SETTING_KEYS.highlightNote, v)}
+        multiline
+        rows={3}
+      />
 
       <div className="flex items-center gap-3 pt-2">
         <Button type="submit" disabled={pending}>

@@ -132,7 +132,15 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 
-  /* Hobby-aksent (bytter via data-hobby) */
+  /* Hobby-aksent (bytter via data-hobby / data-theme) */
+  --color-hobby-accent: hsl(340, 50%, 60%);
+  --color-hobby-accent-light: hsl(340, 70%, 90%);
+  --color-hobby-accent-dark: hsl(340, 50%, 40%);
+  --color-hobby-glow: hsla(340, 60%, 60%, 0.2);
+}
+
+/* Admin overstyrer aksent til gr\u00e5 */
+body:has([data-theme="admin"]) {
   --color-hobby-accent: hsl(210, 15%, 30%);
   --color-hobby-accent-light: hsl(210, 15%, 85%);
   --color-hobby-accent-dark: hsl(210, 15%, 20%);
