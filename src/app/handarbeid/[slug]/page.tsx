@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { and, eq } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import { db } from '@/db';
 import { posts } from '@/db/schema';
+import { AdminEditButton } from '@/components/post/AdminEditButton';
+import { BackButton } from '@/components/post/BackButton';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -39,6 +40,7 @@ export default async function HandarbeidPostPage({ params }: Props) {
 
   return (
     <article className="pb-20">
+      <AdminEditButton postId={post.id} />
       {post.coverImageUrl && (
         <div className="w-full md:px-4 md:mx-auto md:max-w-4xl md:mt-6">
           <div className="aspect-[16/9] max-h-[440px] overflow-hidden bg-muted md:rounded-2xl">
@@ -53,15 +55,9 @@ export default async function HandarbeidPostPage({ params }: Props) {
       )}
 
       <div className="container mx-auto max-w-3xl px-4 py-10">
-        <nav className="text-sm text-muted-foreground mb-6">
-          <Link href="/" className="hover:text-foreground">
-            Hjem
-          </Link>
-          {' / '}
-          <Link href="/handarbeid" className="hover:text-foreground">
-            Nål og tråd
-          </Link>
-        </nav>
+        <div className="mb-6">
+          <BackButton fallbackHref="/handarbeid" fallbackLabel="Nål og tråd" />
+        </div>
 
         <header className="space-y-4 mb-10">
           <h1 className="text-4xl md:text-5xl font-serif leading-tight">

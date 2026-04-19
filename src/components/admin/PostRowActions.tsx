@@ -34,7 +34,13 @@ export function PostRowActions({ postId, hobby, slug, published }: Props) {
   }
 
   return (
-    <div className="flex gap-1 justify-end">
+    <div className="flex gap-1 justify-end flex-wrap">
+      <Link
+        href={`/admin/innlegg/${postId}`}
+        className="px-3 py-1 text-xs rounded hover:bg-muted font-medium"
+      >
+        Rediger
+      </Link>
       {published && (
         <Link
           href={`/${hobby}/${slug}`}
