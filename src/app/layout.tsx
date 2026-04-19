@@ -4,6 +4,7 @@ import './globals.css';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { SkipLink } from '@/components/layout/SkipLink';
+import { WaveTransition } from '@/components/layout/WaveTransition';
 
 const serif = Playfair_Display({
   variable: '--font-serif',
@@ -48,6 +49,7 @@ export default function RootLayout({
         <main id="hovedinnhold" className="flex-1">
           {children}
         </main>
+        <WaveTransition />
         <Footer />
       </body>
     </html>

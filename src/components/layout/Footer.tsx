@@ -11,24 +11,34 @@ function detectHobby(pathname: string): Hobby | null {
   return null;
 }
 
+const FOOTER_COLORS: Record<string, string> = {
+  lys: 'hsl(270, 55%, 35%)',
+  smykker: 'hsl(180, 55%, 32%)',
+  handarbeid: 'hsl(340, 60%, 38%)',
+  neutral: 'hsl(210, 25%, 30%)',
+};
+
 export function Footer() {
   const pathname = usePathname();
   const hobby = detectHobby(pathname);
+  const bg = FOOTER_COLORS[hobby ?? 'neutral'];
   const others = hobby ? HOBBY_KEYS.filter((k) => k !== hobby) : [];
 
   return (
-    <footer className="border-t border-[var(--color-hobby-accent-light)]/30 mt-16">
-      <div className="container mx-auto max-w-6xl px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-        <p>© 2026 · Ronja</p>
+    <footer
+      style={{ background: bg }}
+      className="text-white/90"
+    >
+      <div className="container mx-auto max-w-6xl px-4 py-10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
+        <p className="text-white/75">© 2026 · Ronja</p>
 
         {hobby && (
-          <div className="flex flex-wrap gap-4 items-center justify-center">
+          <div className="flex flex-wrap gap-5 items-center justify-center">
             {others.map((key) => (
               <Link
                 key={key}
                 href={`/${key}`}
-                data-hobby={key}
-                className="hover:text-[var(--color-hobby-accent)] transition-colors"
+                className="hover:text-white transition-colors"
               >
                 → {HOBBIES[key].label}
               </Link>
@@ -36,7 +46,10 @@ export function Footer() {
           </div>
         )}
 
-        <Link href="/start" className="hover:text-foreground transition-colors">
+        <Link
+          href="/start"
+          className="hover:text-white transition-colors"
+        >
           Velg verden
         </Link>
       </div>
