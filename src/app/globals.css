@@ -216,16 +216,16 @@ body:has([data-theme="admin"]) {
     @apply font-sans;
   }
 
-  /* Subtil ensfarget tint per hobby */
-  body:has([data-hobby="lys"]) {
+  /* Subtil ensfarget tint per hobby — kun på selve hobby-siden, ikke per kort */
+  body:has([data-page-hobby="lys"]) {
     background-color: hsl(270, 30%, 98%);
   }
 
-  body:has([data-hobby="smykker"]) {
+  body:has([data-page-hobby="smykker"]) {
     background-color: hsl(180, 25%, 98%);
   }
 
-  body:has([data-hobby="handarbeid"]) {
+  body:has([data-page-hobby="handarbeid"]) {
     background-color: hsl(100, 20%, 97%);
   }
 

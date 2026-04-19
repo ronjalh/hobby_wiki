@@ -3,5 +3,9 @@ export default function HandarbeidLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div data-hobby="handarbeid">{children}</div>;
+  return (
+    <div data-hobby="handarbeid" data-page-hobby="handarbeid">
+      {children}
+    </div>
+  );
 }
