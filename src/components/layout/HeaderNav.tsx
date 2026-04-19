@@ -64,7 +64,6 @@ export function HeaderNav({ isLoggedIn, isAdmin }: Props) {
             active={hobby === 'handarbeid'}
             hobby="handarbeid"
           />
-          <NavLink href="/" label="Om" />
 
           {isLoggedIn ? (
             isAdmin ? (
