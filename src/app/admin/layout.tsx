@@ -38,7 +38,7 @@ export default async function AdminLayout({
   const { name, email, image } = session.user;
 
   return (
-    <div className="container mx-auto max-w-5xl px-4 py-8">
+    <div data-theme="admin" className="container mx-auto max-w-5xl px-4 py-8">
       <div className="flex items-center justify-between mb-6 gap-4">
         <AdminSubNav />
         <Link

@@ -9,8 +9,8 @@ import { InstagramEmbeds } from '@/components/InstagramEmbeds';
 import { SectionDivider } from '@/components/layout/SectionDivider';
 
 const BG = {
-  hero: 'hsl(210, 20%, 99%)',
-  featured: 'hsl(210, 25%, 94%)',
+  hero: 'hsl(340, 40%, 98%)',
+  featured: 'hsl(340, 30%, 94%)',
   instagram: 'hsl(30, 40%, 97%)',
 };
 

@@ -23,7 +23,10 @@ function InstagramIcon({ className }: { className?: string }) {
   );
 }
 
-function detectHobby(pathname: string): Hobby | null {
+type Context = Hobby | 'admin' | null;
+
+function detectContext(pathname: string): Context {
+  if (pathname.startsWith('/admin')) return 'admin';
   for (const key of HOBBY_KEYS) {
     if (pathname.startsWith(`/${key}`)) return key;
   }
@@ -33,14 +36,16 @@ function detectHobby(pathname: string): Hobby | null {
 const FOOTER_COLORS: Record<string, string> = {
   lys: 'hsl(270, 55%, 35%)',
   smykker: 'hsl(180, 55%, 32%)',
-  handarbeid: 'hsl(340, 60%, 38%)',
-  neutral: 'hsl(210, 25%, 30%)',
+  handarbeid: 'hsl(100, 30%, 32%)',
+  admin: 'hsl(210, 25%, 30%)',
+  neutral: 'hsl(340, 40%, 48%)',
 };
 
 export function Footer() {
   const pathname = usePathname();
-  const hobby = detectHobby(pathname);
-  const bg = FOOTER_COLORS[hobby ?? 'neutral'];
+  const context = detectContext(pathname);
+  const bg = FOOTER_COLORS[context ?? 'neutral'];
+  const hobby = context && context !== 'admin' ? context : null;
   const others = hobby ? HOBBY_KEYS.filter((k) => k !== hobby) : [];
 
   return (

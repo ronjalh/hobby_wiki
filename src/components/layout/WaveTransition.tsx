@@ -3,7 +3,10 @@
 import { usePathname } from 'next/navigation';
 import { HOBBY_KEYS, type Hobby } from '@/lib/hobbies';
 
-function detectHobby(pathname: string): Hobby | null {
+type Context = Hobby | 'admin' | null;
+
+function detectContext(pathname: string): Context {
+  if (pathname.startsWith('/admin')) return 'admin';
   for (const key of HOBBY_KEYS) {
     if (pathname.startsWith(`/${key}`)) return key;
   }
@@ -25,24 +28,45 @@ const PALETTES: Record<
     dark: 'hsl(180, 55%, 32%)',
   },
   handarbeid: {
-    light: 'hsl(340, 85%, 87%)',
-    medium: 'hsl(340, 75%, 68%)',
-    dark: 'hsl(340, 60%, 38%)',
+    light: 'hsl(100, 30%, 82%)',
+    medium: 'hsl(100, 26%, 55%)',
+    dark: 'hsl(100, 30%, 32%)',
   },
   neutral: {
+    light: 'hsl(340, 40%, 90%)',
+    medium: 'hsl(340, 35%, 72%)',
+    dark: 'hsl(340, 40%, 48%)',
+  },
+  admin: {
     light: 'hsl(210, 25%, 85%)',
     medium: 'hsl(210, 20%, 55%)',
     dark: 'hsl(210, 25%, 30%)',
   },
 };
 
+// Bakgrunn av SVG-containeren — skal matche body-default
+const BG_TOP: Record<string, string> = {
+  lys: 'hsl(270, 30%, 98%)',
+  smykker: 'hsl(180, 25%, 98%)',
+  handarbeid: 'hsl(100, 20%, 97%)',
+  admin: 'hsl(210, 20%, 99%)',
+  neutral: 'hsl(340, 40%, 98%)',
+};
+
 export function WaveTransition() {
   const pathname = usePathname();
-  const hobby = detectHobby(pathname);
-  const colors = PALETTES[hobby ?? 'neutral'];
+  const context = detectContext(pathname);
+  const paletteKey = context ?? 'neutral';
+  const colors = PALETTES[paletteKey];
+
+  const topBg = BG_TOP[paletteKey];
 
   return (
-    <div className="relative w-full" aria-hidden="true">
+    <div
+      className="relative w-full"
+      style={{ background: topBg }}
+      aria-hidden="true"
+    >
       <svg
         className="block w-full"
         viewBox="0 0 1200 240"
