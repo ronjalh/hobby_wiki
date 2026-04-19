@@ -24,14 +24,15 @@ export function HighlightedPolaroid({
       className="group relative block max-w-[260px] mx-auto transition-transform duration-300 hover:scale-[1.02] hover:rotate-0"
       style={{ transform: `rotate(${rotation}deg)` }}
     >
-      {/* Pink tape — i midten, samme vinkel som kortet, mye overlapp */}
+      {/* Pink tape — motroterer litt for å se rettere enn kortet */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/pink-tape.png"
         alt=""
         aria-hidden="true"
-        className="absolute -top-14 left-1/2 -translate-x-1/2 w-28 h-auto z-10 pointer-events-none"
+        className="absolute -top-14 left-1/2 w-28 h-auto z-10 pointer-events-none"
         style={{
+          transform: `translateX(-50%) rotate(${-rotation * 0.6}deg)`,
           filter: 'drop-shadow(0 2px 3px hsla(340, 40%, 30%, 0.15))',
         }}
       />
