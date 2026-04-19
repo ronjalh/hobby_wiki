@@ -32,7 +32,7 @@ export function HighlightedPolaroid({
         aria-hidden="true"
         className="absolute -top-14 left-1/2 w-28 h-auto z-10 pointer-events-none"
         style={{
-          transform: `translateX(-50%) rotate(${-rotation * 0.95}deg)`,
+          transform: `translateX(-50%) rotate(${-12 - rotation * 0.95}deg)`,
           filter: 'drop-shadow(0 2px 3px hsla(340, 40%, 30%, 0.15))',
         }}
       />
