@@ -17,7 +17,11 @@ export async function uploadImage(
   }
 
   const folder =
-    folderRaw === 'lys' || folderRaw === 'smykker' ? folderRaw : 'misc';
+    folderRaw === 'lys' ||
+    folderRaw === 'smykker' ||
+    folderRaw === 'handarbeid'
+      ? folderRaw
+      : 'misc';
 
   return uploadImageToBlob(file, folder);
 }

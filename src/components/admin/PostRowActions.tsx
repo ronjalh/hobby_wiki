@@ -5,10 +5,11 @@ import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { deletePost, togglePublish } from '@/app/admin/actions';
 import { Button } from '@/components/ui/button';
+import type { Hobby } from '@/lib/hobbies';
 
 type Props = {
   postId: string;
-  hobby: 'lys' | 'smykker';
+  hobby: Hobby;
   slug: string;
   published: boolean;
 };

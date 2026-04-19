@@ -1,0 +1,165 @@
+name: handarbeid-domene
+description: Domain knowledge for needlework — sewing, embroidery, fabric, techniques
+version: 1.0.0
+tags: [domain, handarbeid, sying, broderi, content]
+
+instructions: |
+  # Nål og tråd — Domenekunnskap
+
+  ## Mål
+  Gir Claude vokabular og kontekst når Ronja ber om hjelp til å skrive innlegg om søm, broderi og arbeid med stoff.
+
+  > **Ronja**: Fyll inn dine egne teknikker, materialer og leverandører i "Mine notater" seksjonene.
+
+  ## Stoff
+
+  ### Naturfibre
+  - **Bomull** — mye brukt, lett å sy, krymper ved vask
+  - **Lin** — lett sommerstoff, rynker lett
+  - **Silke** — eksklusivt, glatt, kan glide når man syr
+  - **Ull** — varmt, strukket, drapert pent
+  - **Hamp** — robust, miljøvennlig
+
+  ### Syntetiske/blandet
+  - **Polyester** — rimelig, rynker lite, ikke pustende
+  - **Viskose** — halvkunstig, drapert
+  - **Fleece** — varm, mykt
+
+  ### Egenskaper å vurdere
+  - **Vektklasse**: lett / medium / tung
+  - **Strekk**: woven (ingen strekk) vs. jersey/strikket (strekker)
+  - **Mønster**: ensfarget, print, stripet, rutete
+  - **Veving**: canvas, popelin, sateng, chiffon
+
+  ### Mine notater
+  <!-- Hvilke stoff bruker du? Leverandører (Stoff & Stil? Sybutikker online)? -->
+
+  ## Nåler og tråd
+
+  ### Sy-maskinnåler
+  - **Universal** — standard for woven stoff (90/14)
+  - **Jersey/ball-point** — for strikkede stoff
+  - **Stretch** — for elastiske stoff (lycra)
+  - **Denim** — for tykt stoff
+  - **Microtex** — fin nål for silke, mikrofiber
+
+  Nålestørrelse: lavere nummer = tynnere nål. Velg etter stofftykkelse.
+
+  ### Hånd-nåler
+  - **Sharps** — allsidig
+  - **Embroidery/crewel** — lengre øye for garn
+  - **Tapestry** — butt spiss, for korssting
+  - **Milliners** — lang, for skjørt-kanter
+
+  ### Tråd-typer
+  - **Allroundtråd** (polyester/bomull) — for søm generelt
+  - **Topstitch-tråd** — tykkere, for synlige sømmer
+  - **Broderigarn** — flosset, flere tråder kan deles
+  - **Perletråd** — sterk, tynn for perlebroderi
+
+  ### Mine notater
+  <!-- Favoritt-nåler? Hvilke tråder bruker du oftest? -->
+
+  ## Teknikker — søm
+
+  ### Grunnleggende
+  - **Rett sting (straight stitch)** — grunnleggende søm
+  - **Sikksakk** — hindrer fryn
+  - **Overlock** — ren kant på stretchy stoff
+  - **Knapphullssøm** — ferdig kant rundt knapphull
+
+  ### Sømtyper
+  - **Enkel søm** — to stoff sammen
+  - **Engelsk søm** — ingen synlige kanter
+  - **Flatt-sydd søm** — for robuste plagg (jeans)
+  - **Fransk søm** — for delikate stoff (silke, chiffon)
+
+  ### Monstre og mønstre
+  - Kommerselle mønstre (Burda, Simplicity, Ottobre, Ankers)
+  - Selvlagde mønstre
+  - Digitale PDF-mønstre
+
+  ### Mine notater
+  <!-- Bruker du maskin / hånd / begge? Favorittmønstre? Selvutformete? -->
+
+  ## Broderi
+
+  ### Teknikker
+  - **Korssting (cross stitch)** — klassisk, X-form
+  - **Flatsøm (satin stitch)** — fyller flater med tette parallelle sting
+  - **Kjedesting (chain stitch)** — dekorativ linje
+  - **Stemsting (stem stitch)** — tynn linje, krøller
+  - **Franske knuter** — små knuter, ofte for blomster-detaljer
+  - **Seed stitch** — små spredte sting
+  - **Bullion stitch** — rullede sting
+  - **Needlepainting** — malerisk, realistisk
+
+  ### Materialer
+  - **Broderigarn (floss)** — 6 tråder som kan deles, DMC/Anchor er klassikere
+  - **Perlegarn** — tvinnet, mer glans
+  - **Metallgarn** — dekorativt, tricky å jobbe med
+  - **Crewel-ull** — tradisjonelt engelsk
+
+  ### Stoff for broderi
+  - **Aida cloth** — for korssting, tydelige kvadrater
+  - **Evenweave** — jevnt vevd, for friere broderi
+  - **Kanvasstoff** — for needlepoint
+  - **Vanlig stoff** — for brodering direkte på plagg
+
+  ### Verktøy
+  - **Broderiring/ramme** — holder stoff spent
+  - **Stickmaskin** (valgfritt) — for repeterende mønstre
+
+  ### Mine notater
+  <!-- Favoritt-teknikker? Garn-merker du liker? -->
+
+  ## Andre tekstilteknikker
+
+  ### Quilting
+  - Lappete tepper, flere lag sammensydd
+  - Patchwork, foundation piecing, English paper piecing
+
+  ### Applique
+  - Ett stoff sydd på et annet
+  - Kan kombineres med broderi
+
+  ### Strikking (valgfritt å dekke)
+  - Pinner, garn, masker, kast
+  - Typer: right stitch, left stitch, increase, decrease
+
+  ### Hekling
+  - Heklenål + garn, løkker
+  - Typer: luftmasker, fastmasker, stavmasker
+
+  ### Vev
+  - Enkel ramvev, båndvev
+  - Flere tråder (varp og veft)
+
+  ## Sikkerhet og ergonomi
+  - Pass på fingrene ved maskin-søm
+  - Bruk fingerbøl for hånd-søm
+  - God belysning — øyne blir fort slitne
+  - Pauser for nakke og skuldre
+
+  ## Vedlikehold
+  - Stryk stoff før skjæring (ingen krymping senere)
+  - Vask test-stoff for å forutse krymping
+  - Oppbevar broderi i ramme, ikke brettet
+  - Silketråd og natur-garn trenger mott-beskyttelse
+
+  ## Tagg-forslag
+  `bomull`, `lin`, `silke`, `ull`, `fleece`,
+  `broderi`, `korssting`, `flatsoem`, `kjedesting`, `franske-knuter`,
+  `soemaskin`, `handsydd`, `overlock`,
+  `quilting`, `patchwork`, `applique`,
+  `strikking`, `hekling`, `vev`,
+  `plagg`, `veske`, `pute`, `pynt`, `tepper`,
+  `julegave`, `bursdag`, `bestilt`, `selvdesignet`,
+  `nybegynner`, `avansert`, `eksperiment`
+
+  ## Rules
+  - Bruk norsk fag-terminologi (søm, broderi, mønster, sikksakk, korssting)
+  - Skill mellom maskinsøm og handsøm der det er relevant
+  - For broderi: nevn garn-merke og fargekode (DMC 310 = sort) når relevant
+  - Bevar "håndverk"-følelsen — dette er ikke industriproduksjon
+  - Respekter Ronjas egne preferanser i "Mine notater"

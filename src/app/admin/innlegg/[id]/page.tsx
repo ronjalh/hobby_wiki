@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { posts } from '@/db/schema';
 import { PostForm } from '@/components/admin/PostForm';
+import type { Hobby } from '@/lib/hobbies';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -28,7 +29,7 @@ export default async function RedigerInnleggPage({ params }: Props) {
       </div>
       <PostForm
         initialId={post.id}
-        initialHobby={post.hobby as 'lys' | 'smykker'}
+        initialHobby={post.hobby as Hobby}
         initialTitle={post.title}
         initialExcerpt={post.excerpt ?? ''}
         initialContent={post.content}

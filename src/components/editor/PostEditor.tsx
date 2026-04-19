@@ -23,7 +23,7 @@ import { uploadImage } from '@/app/admin/upload-actions';
 type Props = {
   initialContent?: string;
   onChange: (html: string) => void;
-  hobby?: 'lys' | 'smykker';
+  hobby?: import('@/lib/hobbies').Hobby;
 };
 
 export function PostEditor({ initialContent = '', onChange, hobby }: Props) {

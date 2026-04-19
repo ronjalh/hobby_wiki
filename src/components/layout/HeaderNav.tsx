@@ -22,7 +22,9 @@ export function HeaderNav({ isLoggedIn, isAdmin }: Props) {
     ? 'lys'
     : pathname.startsWith('/smykker')
       ? 'smykker'
-      : null;
+      : pathname.startsWith('/handarbeid')
+        ? 'handarbeid'
+        : null;
 
   return (
     <motion.header
@@ -55,6 +57,12 @@ export function HeaderNav({ isLoggedIn, isAdmin }: Props) {
             label="Smykker"
             active={hobby === 'smykker'}
             hobby="smykker"
+          />
+          <NavLink
+            href="/handarbeid"
+            label="Nål & tråd"
+            active={hobby === 'handarbeid'}
+            hobby="handarbeid"
           />
           <NavLink href="/" label="Om" />
 
@@ -90,7 +98,7 @@ function NavLink({
   href: string;
   label: string;
   active?: boolean;
-  hobby?: 'lys' | 'smykker';
+  hobby?: 'lys' | 'smykker' | 'handarbeid';
 }) {
   return (
     <Link

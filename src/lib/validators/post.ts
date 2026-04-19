@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const hobbySchema = z.enum(['lys', 'smykker']);
+export const hobbySchema = z.enum(['lys', 'smykker', 'handarbeid']);
 export type Hobby = z.infer<typeof hobbySchema>;
 
 export const postSaveSchema = z.object({

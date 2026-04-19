@@ -65,6 +65,17 @@
   --color-smykker-800: hsl(180, 55%, 22%);
   --color-smykker-900: hsl(180, 55%, 14%);
 
+  --color-handarbeid-50: hsl(340, 100%, 98%);
+  --color-handarbeid-100: hsl(340, 90%, 94%);
+  --color-handarbeid-200: hsl(340, 85%, 87%);
+  --color-handarbeid-300: hsl(340, 80%, 78%);
+  --color-handarbeid-400: hsl(340, 75%, 68%);
+  --color-handarbeid-500: hsl(340, 70%, 58%);
+  --color-handarbeid-600: hsl(340, 65%, 48%);
+  --color-handarbeid-700: hsl(340, 60%, 38%);
+  --color-handarbeid-800: hsl(340, 55%, 28%);
+  --color-handarbeid-900: hsl(340, 50%, 18%);
+
   --color-neutral-warm-50: hsl(210, 40%, 98%);
   --color-neutral-warm-100: hsl(210, 35%, 95%);
 
@@ -143,6 +154,13 @@
   --color-hobby-glow: hsla(180, 70%, 55%, 0.22);
 }
 
+[data-hobby="handarbeid"] {
+  --color-hobby-accent: hsl(340, 70%, 55%);
+  --color-hobby-accent-light: hsl(340, 85%, 87%);
+  --color-hobby-accent-dark: hsl(340, 60%, 38%);
+  --color-hobby-glow: hsla(340, 80%, 60%, 0.22);
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -197,6 +215,10 @@
 
   body:has([data-hobby="smykker"]) {
     background-color: hsl(180, 25%, 98%);
+  }
+
+  body:has([data-hobby="handarbeid"]) {
+    background-color: hsl(340, 35%, 98%);
   }
   h1, h2, h3, h4, h5, h6, .font-serif {
     font-family: var(--font-serif), ui-serif, Georgia, serif;

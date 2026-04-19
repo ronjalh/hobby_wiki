@@ -3,6 +3,7 @@ import { desc } from 'drizzle-orm';
 import { db } from '@/db';
 import { posts } from '@/db/schema';
 import { PostRowActions } from '@/components/admin/PostRowActions';
+import type { Hobby } from '@/lib/hobbies';
 
 type Props = {
   searchParams: Promise<{ saved?: string }>;
@@ -98,7 +99,7 @@ export default async function AdminInnleggPage({ searchParams }: Props) {
                   <td className="px-4 py-3 text-right">
                     <PostRowActions
                       postId={post.id}
-                      hobby={post.hobby as 'lys' | 'smykker'}
+                      hobby={post.hobby as Hobby}
                       slug={post.slug}
                       published={post.published}
                     />

@@ -11,7 +11,7 @@ import { postSaveSchema, type PostSaveInput } from '@/lib/validators/post';
 
 async function generateUniqueSlug(
   title: string,
-  hobby: 'lys' | 'smykker',
+  hobby: 'lys' | 'smykker' | 'handarbeid',
   excludeId?: string,
 ): Promise<string> {
   const base = slugify(title) || 'innlegg';

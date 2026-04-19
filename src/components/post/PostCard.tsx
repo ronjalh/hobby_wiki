@@ -1,7 +1,8 @@
 import Link from 'next/link';
+import type { Hobby } from '@/lib/hobbies';
 
 type Props = {
-  hobby: 'lys' | 'smykker';
+  hobby: Hobby;
   slug: string;
   title: string;
   excerpt: string | null;

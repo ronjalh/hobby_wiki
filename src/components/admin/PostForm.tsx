@@ -3,16 +3,16 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Flame, Gem } from 'lucide-react';
 import { savePost } from '@/app/admin/actions';
 import { PostEditor } from '@/components/editor/PostEditor';
 import { CoverImageUpload } from '@/components/admin/CoverImageUpload';
 import { Button } from '@/components/ui/button';
+import { HOBBIES, HOBBY_KEYS, type Hobby } from '@/lib/hobbies';
 import { cn } from '@/lib/utils';
 
 type Props = {
   initialId?: string;
-  initialHobby?: 'lys' | 'smykker';
+  initialHobby?: Hobby;
   initialTitle?: string;
   initialExcerpt?: string;
   initialContent?: string;
@@ -32,9 +32,7 @@ export function PostForm({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
-  const [hobby, setHobby] = useState<'lys' | 'smykker' | undefined>(
-    initialHobby,
-  );
+  const [hobby, setHobby] = useState<Hobby | undefined>(initialHobby);
   const [title, setTitle] = useState(initialTitle);
   const [excerpt, setExcerpt] = useState(initialExcerpt);
   const [content, setContent] = useState(initialContent);
@@ -81,21 +79,21 @@ export function PostForm({
       {/* Hobby-velger */}
       <div>
         <label className="block text-sm font-medium mb-2">Hobby</label>
-        <div className="grid grid-cols-2 gap-3 max-w-md">
-          <HobbyCard
-            selected={hobby === 'lys'}
-            hobbyKey="lys"
-            label="Lysstøping"
-            icon={<Flame className="w-5 h-5" />}
-            onClick={() => setHobby('lys')}
-          />
-          <HobbyCard
-            selected={hobby === 'smykker'}
-            hobbyKey="smykker"
-            label="Smykkelaging"
-            icon={<Gem className="w-5 h-5" />}
-            onClick={() => setHobby('smykker')}
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {HOBBY_KEYS.map((key) => {
+            const config = HOBBIES[key];
+            const Icon = config.icon;
+            return (
+              <HobbyCard
+                key={key}
+                selected={hobby === key}
+                hobbyKey={key}
+                label={config.label}
+                icon={<Icon className="w-5 h-5" />}
+                onClick={() => setHobby(key)}
+              />
+            );
+          })}
         </div>
       </div>
 
@@ -201,7 +199,7 @@ function HobbyCard({
   onClick,
 }: {
   selected: boolean;
-  hobbyKey: 'lys' | 'smykker';
+  hobbyKey: Hobby;
   label: string;
   icon: React.ReactNode;
   onClick: () => void;

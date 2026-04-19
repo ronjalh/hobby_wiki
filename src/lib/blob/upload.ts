@@ -47,7 +47,7 @@ export async function optimizeImage(buffer: Buffer): Promise<{
 
 export async function uploadImageToBlob(
   file: File,
-  folder: 'lys' | 'smykker' | 'misc' = 'misc',
+  folder: 'lys' | 'smykker' | 'handarbeid' | 'misc' = 'misc',
 ): Promise<UploadResult> {
   validateImageFile(file);
 

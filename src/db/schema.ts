@@ -72,7 +72,7 @@ export const posts = pgTable(
     id: text('id')
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
-    hobby: text('hobby', { enum: ['lys', 'smykker'] }).notNull(),
+    hobby: text('hobby', { enum: ['lys', 'smykker', 'handarbeid'] }).notNull(),
     title: text('title').notNull(),
     slug: text('slug').notNull(),
     content: text('content').notNull(),
@@ -111,7 +111,7 @@ export const tags = pgTable('tags', {
     .$defaultFn(() => crypto.randomUUID()),
   slug: text('slug').notNull().unique(),
   label: text('label').notNull(),
-  hobby: text('hobby', { enum: ['lys', 'smykker', 'begge'] }).notNull(),
+  hobby: text('hobby', { enum: ['lys', 'smykker', 'handarbeid', 'begge'] }).notNull(),
 });
 
 export const postsTags = pgTable(

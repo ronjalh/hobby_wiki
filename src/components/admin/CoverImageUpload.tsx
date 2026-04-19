@@ -5,11 +5,12 @@ import Image from 'next/image';
 import { Upload, X, Loader2 } from 'lucide-react';
 import { uploadImage } from '@/app/admin/upload-actions';
 import { cn } from '@/lib/utils';
+import type { Hobby } from '@/lib/hobbies';
 
 type Props = {
   value: string | null;
   onChange: (url: string | null) => void;
-  hobby: 'lys' | 'smykker' | undefined;
+  hobby: Hobby | undefined;
 };
 
 export function CoverImageUpload({ value, onChange, hobby }: Props) {

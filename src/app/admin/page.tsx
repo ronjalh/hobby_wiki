@@ -1,21 +1,25 @@
 import Link from 'next/link';
 import { desc, eq } from 'drizzle-orm';
-import { Plus, FileText, Flame, Gem } from 'lucide-react';
+import { Plus, FileText } from 'lucide-react';
 import { db } from '@/db';
 import { posts } from '@/db/schema';
+import { HOBBIES, HOBBY_KEYS } from '@/lib/hobbies';
 
 export default async function AdminDashboard() {
-  const [totalCount, lysCount, smykkerCount, publishedCount, recent] =
+  const [totalCount, publishedCount, recent, ...hobbyCounts] =
     await Promise.all([
       db.$count(posts),
-      db.$count(posts, eq(posts.hobby, 'lys')),
-      db.$count(posts, eq(posts.hobby, 'smykker')),
       db.$count(posts, eq(posts.published, true)),
       db.query.posts.findMany({
         orderBy: desc(posts.updatedAt),
         limit: 5,
       }),
+      ...HOBBY_KEYS.map((key) => db.$count(posts, eq(posts.hobby, key))),
     ]);
+
+  const countByHobby = Object.fromEntries(
+    HOBBY_KEYS.map((key, i) => [key, hobbyCounts[i]]),
+  ) as Record<(typeof HOBBY_KEYS)[number], number>;
 
   return (
     <div className="space-y-10">
@@ -25,42 +29,44 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Statistikk */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
         <Stat label="Totalt" value={totalCount} />
         <Stat label="Publiserte" value={publishedCount} />
-        <Stat label="Lys" value={lysCount} icon={<Flame className="w-4 h-4" />} />
-        <Stat label="Smykker" value={smykkerCount} icon={<Gem className="w-4 h-4" />} />
+        {HOBBY_KEYS.map((key) => {
+          const config = HOBBIES[key];
+          const Icon = config.icon;
+          return (
+            <Stat
+              key={key}
+              label={config.label}
+              value={countByHobby[key]}
+              icon={<Icon className="w-4 h-4" />}
+            />
+          );
+        })}
       </div>
 
       {/* Hurtigtilganger */}
-      <div className="grid sm:grid-cols-2 gap-3">
-        <Link
-          href="/admin/ny?hobby=lys"
-          data-hobby="lys"
-          className="flex items-center gap-3 px-5 py-4 rounded-xl border-2 border-[var(--color-hobby-accent)]/30 hover:border-[var(--color-hobby-accent)] hover:bg-[var(--color-hobby-accent-light)]/20 transition-all"
-        >
-          <Plus className="w-5 h-5 text-[var(--color-hobby-accent)]" />
-          <div>
-            <p className="font-medium">Nytt lys-innlegg</p>
-            <p className="text-sm text-muted-foreground">
-              Opprett nytt innhold
-            </p>
-          </div>
-        </Link>
-
-        <Link
-          href="/admin/ny?hobby=smykker"
-          data-hobby="smykker"
-          className="flex items-center gap-3 px-5 py-4 rounded-xl border-2 border-[var(--color-hobby-accent)]/30 hover:border-[var(--color-hobby-accent)] hover:bg-[var(--color-hobby-accent-light)]/20 transition-all"
-        >
-          <Plus className="w-5 h-5 text-[var(--color-hobby-accent)]" />
-          <div>
-            <p className="font-medium">Nytt smykke-innlegg</p>
-            <p className="text-sm text-muted-foreground">
-              Opprett nytt innhold
-            </p>
-          </div>
-        </Link>
+      <div className="grid sm:grid-cols-3 gap-3">
+        {HOBBY_KEYS.map((key) => {
+          const config = HOBBIES[key];
+          return (
+            <Link
+              key={key}
+              href={`/admin/ny?hobby=${key}`}
+              data-hobby={key}
+              className="flex items-center gap-3 px-5 py-4 rounded-xl border-2 border-[var(--color-hobby-accent)]/30 hover:border-[var(--color-hobby-accent)] hover:bg-[var(--color-hobby-accent-light)]/20 transition-all"
+            >
+              <Plus className="w-5 h-5 text-[var(--color-hobby-accent)]" />
+              <div>
+                <p className="font-medium">Nytt {config.label.toLowerCase()}-innlegg</p>
+                <p className="text-sm text-muted-foreground">
+                  Opprett nytt innhold
+                </p>
+              </div>
+            </Link>
+          );
+        })}
       </div>
 
       {/* Nylige innlegg */}

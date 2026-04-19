@@ -1,7 +1,7 @@
 # Hobby Wiki — Claude Development Guide
 
 ## Project Overview
-Personal hobby blog/wiki for Ronja's two hobbies: **lysstøping** (candle making) and **smykkelaging** (jewelry making). Public-facing website where visitors can browse posts, images, and stories. Only admins can create/edit content. Hosted online (not local).
+Personal hobby blog/wiki for Ronja's three hobbies: **lysstøping** (candle making), **smykkelaging** (jewelry making), and **nål og tråd** (sewing, embroidery, fabric work). Public-facing website where visitors can browse posts, images, and stories. Only admins can create/edit content. Hosted online (not local).
 
 ## Tech Stack
 - **Framework:** Next.js 15 (App Router, TypeScript, Server Components)
@@ -27,10 +27,12 @@ Personal hobby blog/wiki for Ronja's two hobbies: **lysstøping** (candle making
 ```
 /                  — Om siden: intro til Ronja og hobbyene, 3-4 nyeste innlegg, CTA til /start
 /start             — Matrix-inspirert pill-valg (lilla = lys, turkis = smykker)
-/lys               — Lysstøping-verden (bento-grid + masonry)
-/lys/[slug]        — Enkelt lysstøping-innlegg (magazine-stil)
-/smykker           — Smykke-verden (bento-grid + masonry)
-/smykker/[slug]    — Enkelt smykke-innlegg (magazine-stil)
+/lys               — Lysstøping-verden
+/lys/[slug]        — Enkelt lysstøping-innlegg
+/smykker           — Smykke-verden
+/smykker/[slug]    — Enkelt smykke-innlegg
+/handarbeid        — Nål og tråd-verden
+/handarbeid/[slug] — Enkelt håndarbeid-innlegg
 /admin             — Admin dashboard (kun admins)
 /admin/ny          — Nytt innlegg editor
 /admin/innlegg/[id] — Rediger innlegg
@@ -57,7 +59,7 @@ Personal hobby blog/wiki for Ronja's two hobbies: **lysstøping** (candle making
 - NEVER expose admin routes without `auth()` + admin role check
 - NEVER upload images > 2 MB to Vercel Blob — compress first
 - NEVER skip `prefers-reduced-motion` check in animations
-- NEVER hardcode hobby strings — use `'lys' | 'smykker'` union type
+- NEVER hardcode hobby strings — use `Hobby` type from `@/lib/hobbies`. Add new hobbies by updating `src/lib/hobbies.ts` + DB enums in `src/db/schema.ts`.
 - NEVER commit `.env.local` or `.env` — secrets only in Vercel env vars
 - Vercel Blob free tier: 1 GB storage — aim for ≤300 KB per image average
 
