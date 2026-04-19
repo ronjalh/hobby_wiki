@@ -87,6 +87,8 @@ export async function deleteInstagramPost(id: string) {
   revalidatePath('/admin/forside');
 }
 
+export const MAX_FEATURED = 3;
+
 export async function toggleFeatured(postId: string) {
   await requireAdmin();
 
@@ -97,6 +99,16 @@ export async function toggleFeatured(postId: string) {
 
   if (!post.published && !post.featured) {
     throw new Error('Kun publiserte innlegg kan fremheves');
+  }
+
+  // Håndhev maks-grense når vi legger til
+  if (!post.featured) {
+    const count = await db.$count(posts, eq(posts.featured, true));
+    if (count >= MAX_FEATURED) {
+      throw new Error(
+        `Maks ${MAX_FEATURED} fremhevede innlegg. Fjern ett først.`,
+      );
+    }
   }
 
   await db

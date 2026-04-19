@@ -33,10 +33,10 @@ export default async function ForsideAdminPage() {
       </section>
 
       <section className="space-y-4">
-        <h3 className="font-serif text-xl">Fremhevede innlegg</h3>
+        <h3 className="font-serif text-xl">Fremhevede innlegg (maks 3)</h3>
         <p className="text-sm text-muted-foreground">
-          Velg innlegg som vises på forsiden. Kun publiserte innlegg kan
-          fremheves.
+          Velg opptil 3 innlegg som vises på forsiden. Kun publiserte innlegg
+          kan fremheves. {candidates.filter((p) => p.featured).length}/3 valgt.
         </p>
         <FeaturedPostsPicker posts={candidates} />
       </section>

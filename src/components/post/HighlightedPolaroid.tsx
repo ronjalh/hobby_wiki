@@ -24,15 +24,16 @@ export function HighlightedPolaroid({
       className="group relative block max-w-[260px] mx-auto transition-transform duration-300 hover:scale-[1.02] hover:rotate-0"
       style={{ transform: `rotate(${rotation}deg)` }}
     >
-      {/* Teipbit */}
-      <div
-        className="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-6 z-10 rounded-[2px]"
+      {/* Pink tape */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/pink-tape.png"
+        alt=""
+        aria-hidden="true"
+        className="absolute -top-5 left-1/2 -translate-x-1/2 w-24 h-auto z-10 pointer-events-none"
         style={{
-          background:
-            'linear-gradient(180deg, hsla(0, 0%, 15%, 0.75) 0%, hsla(0, 0%, 25%, 0.7) 100%)',
-          boxShadow:
-            '0 2px 4px hsla(0, 0%, 0%, 0.2), inset 0 1px 0 hsla(0, 0%, 100%, 0.1)',
-          transform: 'rotate(-3deg)',
+          transform: 'translateX(-50%) rotate(-4deg)',
+          filter: 'drop-shadow(0 2px 3px hsla(340, 40%, 30%, 0.15))',
         }}
       />
 

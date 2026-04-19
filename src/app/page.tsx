@@ -4,7 +4,6 @@ import { db } from '@/db';
 import { posts, instagramPosts } from '@/db/schema';
 import { SETTING_KEYS } from '@/lib/settings';
 import { getAllSettings } from '@/lib/settings-db';
-import { PolaroidCard } from '@/components/post/PolaroidCard';
 import { HighlightedPolaroid } from '@/components/post/HighlightedPolaroid';
 import { HighlightNote } from '@/components/post/HighlightNote';
 import { InstagramEmbeds } from '@/components/InstagramEmbeds';
@@ -24,16 +23,15 @@ export default async function Home() {
     db.query.posts.findMany({
       where: and(eq(posts.featured, true), eq(posts.published, true)),
       orderBy: desc(posts.publishedAt),
-      limit: 12,
+      limit: 3,
     }),
     db.query.instagramPosts.findMany({
       orderBy: asc(instagramPosts.sortOrder),
     }),
   ]);
 
-  const topHighlights = featured.slice(0, 2);
-  const restFeatured = featured.slice(2);
-  const hasHighlights = topHighlights.length > 0;
+  // Rotasjoner for de 3 highlights (tilfeldig følelse)
+  const ROTATIONS = [-3, 2, -1.5];
 
   return (
     <div>
@@ -76,65 +74,25 @@ export default async function Home() {
                 Fremhevede prosjekter
               </h2>
 
-              {/* Top 2 highlights + note */}
-              {hasHighlights && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 items-center justify-items-center mb-12 pt-6">
-                  {topHighlights[0] && (
-                    <div data-hobby={topHighlights[0].hobby}>
-                      <HighlightedPolaroid
-                        hobby={topHighlights[0].hobby as Hobby}
-                        slug={topHighlights[0].slug}
-                        title={topHighlights[0].title}
-                        coverImageUrl={topHighlights[0].coverImageUrl}
-                        publishedAt={topHighlights[0].publishedAt}
-                        rotation={-3}
-                      />
-                    </div>
-                  )}
-                  {topHighlights[1] ? (
-                    <div data-hobby={topHighlights[1].hobby}>
-                      <HighlightedPolaroid
-                        hobby={topHighlights[1].hobby as Hobby}
-                        slug={topHighlights[1].slug}
-                        title={topHighlights[1].title}
-                        coverImageUrl={topHighlights[1].coverImageUrl}
-                        publishedAt={topHighlights[1].publishedAt}
-                        rotation={2}
-                      />
-                    </div>
-                  ) : (
-                    <div />
-                  )}
-                  <div className="sm:col-span-1">
-                    <HighlightNote
-                      text={settings[SETTING_KEYS.highlightNote]}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 items-start justify-items-center pt-6">
+                {featured.map((post, i) => (
+                  <div key={post.id} data-hobby={post.hobby}>
+                    <HighlightedPolaroid
+                      hobby={post.hobby as Hobby}
+                      slug={post.slug}
+                      title={post.title}
+                      coverImageUrl={post.coverImageUrl}
+                      publishedAt={post.publishedAt}
+                      rotation={ROTATIONS[i] ?? 0}
                     />
                   </div>
-                </div>
-              )}
+                ))}
+              </div>
 
-              {/* Resten som mindre polaroids */}
-              {restFeatured.length > 0 && (
-                <div className="pt-6 border-t border-[var(--color-hobby-accent)]/10">
-                  <h3 className="text-center text-sm uppercase tracking-widest text-muted-foreground mb-8">
-                    Flere prosjekter
-                  </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
-                    {restFeatured.map((post) => (
-                      <div key={post.id} data-hobby={post.hobby}>
-                        <PolaroidCard
-                          hobby={post.hobby as Hobby}
-                          slug={post.slug}
-                          title={post.title}
-                          coverImageUrl={post.coverImageUrl}
-                          publishedAt={post.publishedAt}
-                          size="sm"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              {/* Notat under highlights */}
+              <div className="flex justify-center mt-12">
+                <HighlightNote text={settings[SETTING_KEYS.highlightNote]} />
+              </div>
             </div>
           </section>
         </>
