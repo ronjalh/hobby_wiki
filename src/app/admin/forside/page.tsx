@@ -1,7 +1,7 @@
 import { and, desc, eq, or } from 'drizzle-orm';
 import { db } from '@/db';
 import { posts } from '@/db/schema';
-import { getAllSettings } from '@/lib/settings';
+import { getAllSettings } from '@/lib/settings-db';
 import { ForsideSettingsForm } from '@/components/admin/ForsideSettingsForm';
 import { FeaturedPostsPicker } from '@/components/admin/FeaturedPostsPicker';
 

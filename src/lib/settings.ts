@@ -1,5 +1,4 @@
-import { db } from '@/db';
-import { siteSettings } from '@/db/schema';
+// Klient-trygt: kun konstanter og typer. Ingen db-import.
 
 export const SETTING_KEYS = {
   heroTitle: 'hero_title',
@@ -18,14 +17,3 @@ export const DEFAULT_SETTINGS: Record<SettingKey, string> = {
   [SETTING_KEYS.aboutBody]:
     'Her kommer teksten om deg. Rediger fra admin → Forside.',
 };
-
-export async function getAllSettings(): Promise<Record<SettingKey, string>> {
-  const rows = await db.select().from(siteSettings);
-  const map = { ...DEFAULT_SETTINGS };
-  for (const row of rows) {
-    if (row.key in map) {
-      map[row.key as SettingKey] = row.value;
-    }
-  }
-  return map;
-}

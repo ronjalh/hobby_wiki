@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { and, desc, eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { posts } from '@/db/schema';
-import { getAllSettings, SETTING_KEYS } from '@/lib/settings';
+import { SETTING_KEYS } from '@/lib/settings';
+import { getAllSettings } from '@/lib/settings-db';
 import { PostCard } from '@/components/post/PostCard';
 import type { Hobby } from '@/lib/hobbies';
 
