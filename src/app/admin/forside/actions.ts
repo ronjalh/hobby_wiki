@@ -87,7 +87,7 @@ export async function deleteInstagramPost(id: string) {
   revalidatePath('/admin/forside');
 }
 
-export const MAX_FEATURED = 3;
+const MAX_FEATURED = 3;
 
 export async function toggleFeatured(postId: string) {
   await requireAdmin();
