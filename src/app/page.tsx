@@ -13,7 +13,6 @@ const BG = {
   hero: 'hsl(340, 40%, 98%)',
   featured: 'hsl(340, 30%, 94%)',
   instagram: 'hsl(30, 40%, 97%)',
-  about: 'hsl(40, 40%, 96%)',
 };
 
 export default async function Home() {
@@ -44,14 +43,21 @@ export default async function Home() {
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto whitespace-pre-line">
               {settings[SETTING_KEYS.heroSubtitle]}
             </p>
-            <div className="pt-4 flex justify-center">
+            <div className="pt-6 flex justify-center">
               <Link
                 href="/start"
-                className="rounded-2xl border-2 border-[var(--color-hobby-accent-light)] bg-white px-10 py-6 text-center transition-all hover:border-[var(--color-hobby-accent)] hover:bg-[var(--color-hobby-accent-light)]/30 hover:-translate-y-0.5"
+                aria-label="Utforsk — velg verden"
+                className="group flex flex-col items-center gap-3"
               >
-                <p className="font-serif text-xl mb-1">Start eventyret</p>
-                <p className="text-sm text-muted-foreground">
-                  Velg en verden å utforske
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/book-button.png"
+                  alt=""
+                  aria-hidden="true"
+                  className="w-40 h-40 md:w-48 md:h-48 object-contain transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[-2deg]"
+                />
+                <p className="font-serif text-2xl text-[var(--color-hobby-accent-dark)] group-hover:text-[var(--color-hobby-accent)] transition-colors">
+                  Utforsk
                 </p>
               </Link>
             </div>
@@ -124,19 +130,19 @@ export default async function Home() {
         </>
       )}
 
-      {/* Om meg */}
-      <SectionDivider
-        fromColor={
-          igPosts.length > 0
-            ? BG.instagram
-            : featured.length > 0
-              ? BG.featured
-              : BG.hero
-        }
-        toColor={BG.about}
-        variant="gentle"
-      />
-      <section style={{ background: BG.about }}>
+      {/* Om meg — arver body-bakgrunn */}
+      {(featured.length > 0 || igPosts.length > 0) && (
+        <SectionDivider
+          fromColor={
+            igPosts.length > 0
+              ? BG.instagram
+              : BG.featured
+          }
+          toColor={BG.hero}
+          variant="gentle"
+        />
+      )}
+      <section>
         <div className="container mx-auto max-w-3xl px-4 py-16">
           <h2 className="text-3xl font-serif mb-6">
             {settings[SETTING_KEYS.aboutHeading]}
