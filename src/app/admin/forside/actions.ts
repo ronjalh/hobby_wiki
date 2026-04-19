@@ -1,9 +1,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { eq, and } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { db } from '@/db';
-import { siteSettings, posts } from '@/db/schema';
+import { siteSettings, posts, instagramPosts } from '@/db/schema';
 import { requireAdmin } from '@/lib/auth/roles';
 import { SETTING_KEYS, type SettingKey } from '@/lib/settings';
 
@@ -52,6 +52,37 @@ export async function updateAllSettings(values: Record<string, string>) {
     }
   }
 
+  revalidatePath('/');
+  revalidatePath('/admin/forside');
+}
+
+export async function addInstagramPost(embedHtml: string) {
+  await requireAdmin();
+
+  const trimmed = embedHtml.trim();
+  if (!trimmed.includes('instagram-media')) {
+    throw new Error(
+      'Embed-koden ser ikke riktig ut. Bruk "..." → "Embed" på et innlegg på Instagram og kopier hele HTML-blokken.',
+    );
+  }
+
+  const maxOrder = await db
+    .select({ max: sql<number>`COALESCE(MAX(${instagramPosts.sortOrder}), 0)` })
+    .from(instagramPosts);
+  const nextOrder = (maxOrder[0]?.max ?? 0) + 1;
+
+  await db.insert(instagramPosts).values({
+    embedHtml: trimmed,
+    sortOrder: nextOrder,
+  });
+
+  revalidatePath('/');
+  revalidatePath('/admin/forside');
+}
+
+export async function deleteInstagramPost(id: string) {
+  await requireAdmin();
+  await db.delete(instagramPosts).where(eq(instagramPosts.id, id));
   revalidatePath('/');
   revalidatePath('/admin/forside');
 }

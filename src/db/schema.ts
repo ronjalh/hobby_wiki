@@ -128,6 +128,15 @@ export const postsTags = pgTable(
   (t) => [primaryKey({ columns: [t.postId, t.tagId] })],
 );
 
+export const instagramPosts = pgTable('instagram_posts', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  embedHtml: text('embed_html').notNull(),
+  sortOrder: integer('sort_order').notNull().default(0),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 export const siteSettings = pgTable('site_settings', {
   key: text('key').primaryKey(),
   value: text('value').notNull(),

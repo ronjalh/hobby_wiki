@@ -1,19 +1,23 @@
 import Link from 'next/link';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, asc, desc, eq } from 'drizzle-orm';
 import { db } from '@/db';
-import { posts } from '@/db/schema';
+import { posts, instagramPosts } from '@/db/schema';
 import { SETTING_KEYS } from '@/lib/settings';
 import { getAllSettings } from '@/lib/settings-db';
 import { PostCard } from '@/components/post/PostCard';
+import { InstagramEmbeds } from '@/components/InstagramEmbeds';
 import type { Hobby } from '@/lib/hobbies';
 
 export default async function Home() {
-  const [settings, featured] = await Promise.all([
+  const [settings, featured, igPosts] = await Promise.all([
     getAllSettings(),
     db.query.posts.findMany({
       where: and(eq(posts.featured, true), eq(posts.published, true)),
       orderBy: desc(posts.publishedAt),
       limit: 6,
+    }),
+    db.query.instagramPosts.findMany({
+      orderBy: asc(instagramPosts.sortOrder),
     }),
   ]);
 
@@ -58,6 +62,26 @@ export default async function Home() {
               </div>
             ))}
           </div>
+        </section>
+      )}
+
+      {/* Instagram */}
+      {igPosts.length > 0 && (
+        <section className="mb-20 space-y-6">
+          <div className="text-center">
+            <h2 className="text-3xl font-serif">Fra Instagram</h2>
+            <a
+              href="https://instagram.com/lem_designz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              @lem_designz →
+            </a>
+          </div>
+          <InstagramEmbeds
+            posts={igPosts.map((p) => ({ id: p.id, embedHtml: p.embedHtml }))}
+          />
         </section>
       )}
 
