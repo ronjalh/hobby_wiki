@@ -42,7 +42,7 @@ export function WaveTransition() {
   const colors = PALETTES[hobby ?? 'neutral'];
 
   return (
-    <div className="relative w-full mt-16" aria-hidden="true">
+    <div className="relative w-full" aria-hidden="true">
       <svg
         className="block w-full"
         viewBox="0 0 1200 240"

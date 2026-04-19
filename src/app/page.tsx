@@ -6,7 +6,15 @@ import { SETTING_KEYS } from '@/lib/settings';
 import { getAllSettings } from '@/lib/settings-db';
 import { PostCard } from '@/components/post/PostCard';
 import { InstagramEmbeds } from '@/components/InstagramEmbeds';
+import { SectionDivider } from '@/components/layout/SectionDivider';
 import type { Hobby } from '@/lib/hobbies';
+
+const BG = {
+  hero: 'hsl(210, 20%, 99%)',
+  featured: 'hsl(270, 35%, 97%)',
+  instagram: 'hsl(30, 40%, 97%)',
+  about: 'hsl(180, 25%, 97%)',
+};
 
 export default async function Home() {
   const [settings, featured, igPosts] = await Promise.all([
@@ -22,78 +30,114 @@ export default async function Home() {
   ]);
 
   return (
-    <div className="container mx-auto max-w-5xl px-4 py-20">
+    <div>
       {/* Hero */}
-      <section className="text-center space-y-6 mb-16">
-        <h1 className="text-5xl md:text-6xl font-serif">
-          {settings[SETTING_KEYS.heroTitle]}
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto whitespace-pre-line">
-          {settings[SETTING_KEYS.heroSubtitle]}
-        </p>
-        <div className="pt-4 flex justify-center">
-          <Link
-            href="/start"
-            className="rounded-2xl border border-neutral-200 px-10 py-6 text-center transition-colors hover:bg-neutral-50"
-          >
-            <p className="font-serif text-xl mb-1">Start eventyret</p>
-            <p className="text-sm text-muted-foreground">
-              Velg en verden å utforske
+      <section style={{ background: BG.hero }}>
+        <div className="container mx-auto max-w-5xl px-4 pt-20 pb-24">
+          <div className="text-center space-y-6">
+            <h1 className="text-5xl md:text-6xl font-serif">
+              {settings[SETTING_KEYS.heroTitle]}
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto whitespace-pre-line">
+              {settings[SETTING_KEYS.heroSubtitle]}
             </p>
-          </Link>
+            <div className="pt-4 flex justify-center">
+              <Link
+                href="/start"
+                className="rounded-2xl border border-neutral-200 bg-background px-10 py-6 text-center transition-colors hover:bg-neutral-50"
+              >
+                <p className="font-serif text-xl mb-1">Start eventyret</p>
+                <p className="text-sm text-muted-foreground">
+                  Velg en verden å utforske
+                </p>
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Fremhevede innlegg */}
       {featured.length > 0 && (
-        <section className="mb-20 space-y-6">
-          <h2 className="text-3xl font-serif text-center">Fremhevede prosjekter</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {featured.map((post) => (
-              <div key={post.id} data-hobby={post.hobby}>
-                <PostCard
-                  hobby={post.hobby as Hobby}
-                  slug={post.slug}
-                  title={post.title}
-                  excerpt={post.excerpt}
-                  coverImageUrl={post.coverImageUrl}
-                  publishedAt={post.publishedAt}
-                />
+        <>
+          <SectionDivider fromColor={BG.hero} toColor={BG.featured} variant="gentle" />
+          <section style={{ background: BG.featured }}>
+            <div className="container mx-auto max-w-5xl px-4 py-20">
+              <h2 className="text-3xl font-serif text-center mb-10">
+                Fremhevede prosjekter
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {featured.map((post) => (
+                  <div key={post.id} data-hobby={post.hobby}>
+                    <PostCard
+                      hobby={post.hobby as Hobby}
+                      slug={post.slug}
+                      title={post.title}
+                      excerpt={post.excerpt}
+                      coverImageUrl={post.coverImageUrl}
+                      publishedAt={post.publishedAt}
+                    />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </section>
+            </div>
+          </section>
+        </>
       )}
 
       {/* Instagram */}
       {igPosts.length > 0 && (
-        <section className="mb-20 space-y-6">
-          <div className="text-center">
-            <h2 className="text-3xl font-serif">Fra Instagram</h2>
-            <a
-              href="https://instagram.com/lem_designz"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block mt-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              @lem_designz →
-            </a>
-          </div>
-          <InstagramEmbeds
-            posts={igPosts.map((p) => ({ id: p.id, embedHtml: p.embedHtml }))}
+        <>
+          <SectionDivider
+            fromColor={featured.length > 0 ? BG.featured : BG.hero}
+            toColor={BG.instagram}
+            variant="wavy"
           />
-        </section>
+          <section style={{ background: BG.instagram }}>
+            <div className="container mx-auto max-w-5xl px-4 py-20">
+              <div className="text-center mb-10">
+                <h2 className="text-3xl font-serif">Fra Instagram</h2>
+                <a
+                  href="https://instagram.com/lem_designz"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block mt-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  @lem_designz →
+                </a>
+              </div>
+              <InstagramEmbeds
+                posts={igPosts.map((p) => ({
+                  id: p.id,
+                  embedHtml: p.embedHtml,
+                }))}
+              />
+            </div>
+          </section>
+        </>
       )}
 
       {/* Om meg */}
-      <section className="max-w-2xl mx-auto space-y-4">
-        <h2 className="text-3xl font-serif">
-          {settings[SETTING_KEYS.aboutHeading]}
-        </h2>
-        <div className="prose prose-lg max-w-none">
-          <p className="whitespace-pre-line text-foreground/80">
-            {settings[SETTING_KEYS.aboutBody]}
-          </p>
+      <SectionDivider
+        fromColor={
+          igPosts.length > 0
+            ? BG.instagram
+            : featured.length > 0
+              ? BG.featured
+              : BG.hero
+        }
+        toColor={BG.about}
+        variant="gentle"
+      />
+      <section style={{ background: BG.about }}>
+        <div className="container mx-auto max-w-3xl px-4 py-20">
+          <h2 className="text-3xl font-serif mb-6">
+            {settings[SETTING_KEYS.aboutHeading]}
+          </h2>
+          <div className="prose prose-lg max-w-none">
+            <p className="whitespace-pre-line text-foreground/80">
+              {settings[SETTING_KEYS.aboutBody]}
+            </p>
+          </div>
         </div>
       </section>
     </div>
