@@ -130,8 +130,8 @@ export default async function Home() {
         />
       )}
 
-      {/* Om meg — ingen egen bakgrunn (samme som hero) */}
-      <section style={{ background: BG.hero }}>
+      {/* Om meg — arver sidens default bakgrunn */}
+      <section>
         <div className="container mx-auto max-w-3xl px-4 py-16">
           <h2 className="text-3xl font-serif mb-6">
             {settings[SETTING_KEYS.aboutHeading]}
