@@ -4,16 +4,14 @@ import { db } from '@/db';
 import { posts, instagramPosts } from '@/db/schema';
 import { SETTING_KEYS } from '@/lib/settings';
 import { getAllSettings } from '@/lib/settings-db';
-import { PostCard } from '@/components/post/PostCard';
+import { FeaturedCarousel } from '@/components/FeaturedCarousel';
 import { InstagramEmbeds } from '@/components/InstagramEmbeds';
 import { SectionDivider } from '@/components/layout/SectionDivider';
-import type { Hobby } from '@/lib/hobbies';
 
 const BG = {
   hero: 'hsl(210, 20%, 99%)',
-  featured: 'hsl(270, 35%, 97%)',
+  featured: 'hsl(210, 25%, 94%)',
   instagram: 'hsl(30, 40%, 97%)',
-  about: 'hsl(180, 25%, 97%)',
 };
 
 export default async function Home() {
@@ -22,12 +20,18 @@ export default async function Home() {
     db.query.posts.findMany({
       where: and(eq(posts.featured, true), eq(posts.published, true)),
       orderBy: desc(posts.publishedAt),
-      limit: 6,
+      limit: 12,
     }),
     db.query.instagramPosts.findMany({
       orderBy: asc(instagramPosts.sortOrder),
     }),
   ]);
+
+  const lastColoredBg = igPosts.length > 0
+    ? BG.instagram
+    : featured.length > 0
+      ? BG.featured
+      : BG.hero;
 
   return (
     <div>
@@ -59,26 +63,27 @@ export default async function Home() {
       {/* Fremhevede innlegg */}
       {featured.length > 0 && (
         <>
-          <SectionDivider fromColor={BG.hero} toColor={BG.featured} variant="gentle" />
+          <SectionDivider
+            fromColor={BG.hero}
+            toColor={BG.featured}
+            variant="gentle"
+          />
           <section style={{ background: BG.featured }}>
-            <div className="container mx-auto max-w-5xl px-4 py-20">
-              <h2 className="text-3xl font-serif text-center mb-10">
+            <div className="container mx-auto max-w-5xl px-4 py-10">
+              <h2 className="text-3xl font-serif text-center mb-8">
                 Fremhevede prosjekter
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {featured.map((post) => (
-                  <div key={post.id} data-hobby={post.hobby}>
-                    <PostCard
-                      hobby={post.hobby as Hobby}
-                      slug={post.slug}
-                      title={post.title}
-                      excerpt={post.excerpt}
-                      coverImageUrl={post.coverImageUrl}
-                      publishedAt={post.publishedAt}
-                    />
-                  </div>
-                ))}
-              </div>
+              <FeaturedCarousel
+                posts={featured.map((p) => ({
+                  id: p.id,
+                  hobby: p.hobby,
+                  slug: p.slug,
+                  title: p.title,
+                  excerpt: p.excerpt,
+                  coverImageUrl: p.coverImageUrl,
+                  publishedAt: p.publishedAt,
+                }))}
+              />
             </div>
           </section>
         </>
@@ -93,7 +98,7 @@ export default async function Home() {
             variant="wavy"
           />
           <section style={{ background: BG.instagram }}>
-            <div className="container mx-auto max-w-5xl px-4 py-20">
+            <div className="container mx-auto max-w-5xl px-4 py-16">
               <div className="text-center mb-10">
                 <h2 className="text-3xl font-serif">Fra Instagram</h2>
                 <a
@@ -116,20 +121,18 @@ export default async function Home() {
         </>
       )}
 
-      {/* Om meg */}
-      <SectionDivider
-        fromColor={
-          igPosts.length > 0
-            ? BG.instagram
-            : featured.length > 0
-              ? BG.featured
-              : BG.hero
-        }
-        toColor={BG.about}
-        variant="gentle"
-      />
-      <section style={{ background: BG.about }}>
-        <div className="container mx-auto max-w-3xl px-4 py-20">
+      {/* Liten bølge før Om meg — går fra siste fargede seksjon til hvit */}
+      {(featured.length > 0 || igPosts.length > 0) && (
+        <SectionDivider
+          fromColor={lastColoredBg}
+          toColor={BG.hero}
+          variant="gentle"
+        />
+      )}
+
+      {/* Om meg — ingen egen bakgrunn (samme som hero) */}
+      <section style={{ background: BG.hero }}>
+        <div className="container mx-auto max-w-3xl px-4 py-16">
           <h2 className="text-3xl font-serif mb-6">
             {settings[SETTING_KEYS.aboutHeading]}
           </h2>
