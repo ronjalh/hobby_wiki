@@ -79,6 +79,7 @@ export const posts = pgTable(
     excerpt: text('excerpt'),
     coverImageUrl: text('cover_image_url'),
     published: boolean('published').notNull().default(false),
+    featured: boolean('featured').notNull().default(false),
     publishedAt: timestamp('published_at'),
     authorId: text('author_id')
       .references(() => users.id)
@@ -126,6 +127,12 @@ export const postsTags = pgTable(
   },
   (t) => [primaryKey({ columns: [t.postId, t.tagId] })],
 );
+
+export const siteSettings = pgTable('site_settings', {
+  key: text('key').primaryKey(),
+  value: text('value').notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
 
 export const drafts = pgTable('drafts', {
   id: text('id')

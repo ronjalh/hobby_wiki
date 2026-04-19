@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, FileText, Users, User } from 'lucide-react';
+import { LayoutDashboard, FileText, Home, Users, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const LINKS = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
   { href: '/admin/innlegg', label: 'Innlegg', icon: FileText, exact: false },
+  { href: '/admin/forside', label: 'Forside', icon: Home, exact: true },
   { href: '/admin/brukere', label: 'Brukere', icon: Users, exact: true },
   { href: '/admin/profil', label: 'Profil', icon: User, exact: true },
 ];
