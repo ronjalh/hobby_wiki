@@ -30,7 +30,7 @@ export function HighlightedPolaroid({
         src="/pink-tape.png"
         alt=""
         aria-hidden="true"
-        className="absolute -top-2 left-1/2 -translate-x-1/2 w-28 h-auto z-10 pointer-events-none"
+        className="absolute -top-14 left-1/2 -translate-x-1/2 w-28 h-auto z-10 pointer-events-none"
         style={{
           filter: 'drop-shadow(0 2px 3px hsla(340, 40%, 30%, 0.15))',
         }}
