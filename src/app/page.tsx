@@ -5,7 +5,6 @@ import { posts, instagramPosts } from '@/db/schema';
 import { SETTING_KEYS } from '@/lib/settings';
 import { getAllSettings } from '@/lib/settings-db';
 import { HighlightedPolaroid } from '@/components/post/HighlightedPolaroid';
-import { HighlightNote } from '@/components/post/HighlightNote';
 import { InstagramEmbeds } from '@/components/InstagramEmbeds';
 import { SectionDivider } from '@/components/layout/SectionDivider';
 import type { Hobby } from '@/lib/hobbies';
@@ -87,11 +86,6 @@ export default async function Home() {
                     />
                   </div>
                 ))}
-              </div>
-
-              {/* Notat under highlights */}
-              <div className="flex justify-center mt-12">
-                <HighlightNote text={settings[SETTING_KEYS.highlightNote]} />
               </div>
             </div>
           </section>
