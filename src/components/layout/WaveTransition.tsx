@@ -43,41 +43,25 @@ export function WaveTransition() {
 
   return (
     <div className="relative w-full mt-16" aria-hidden="true">
-      {/* Lyseste lag — lengst opp */}
       <svg
         className="block w-full"
-        viewBox="0 0 1200 120"
+        viewBox="0 0 1200 240"
         preserveAspectRatio="none"
-        style={{ height: '70px', marginBottom: '-40px' }}
+        style={{ height: '140px', marginBottom: '-1px' }}
       >
+        {/* Lyseste — bakerst, peek øverst */}
         <path
-          d="M0,50 C180,90 380,10 600,45 C820,80 1020,20 1200,55 L1200,120 L0,120 Z"
+          d="M0,50 C180,90 380,10 600,45 C820,85 1020,20 1200,55 L1200,240 L0,240 Z"
           fill={colors.light}
-          opacity="0.9"
         />
-      </svg>
-      {/* Midtre lag */}
-      <svg
-        className="block w-full"
-        viewBox="0 0 1200 120"
-        preserveAspectRatio="none"
-        style={{ height: '80px', marginBottom: '-40px' }}
-      >
+        {/* Midtre — i midten */}
         <path
-          d="M0,65 C150,25 380,100 600,60 C820,20 1050,95 1200,55 L1200,120 L0,120 Z"
+          d="M0,110 C150,75 380,150 600,115 C820,75 1050,155 1200,120 L1200,240 L0,240 Z"
           fill={colors.medium}
-          opacity="0.95"
         />
-      </svg>
-      {/* Mørkeste lag — kobler til footer */}
-      <svg
-        className="block w-full"
-        viewBox="0 0 1200 120"
-        preserveAspectRatio="none"
-        style={{ height: '70px', marginBottom: '-1px' }}
-      >
+        {/* Mørkeste — fremst, nederst, kobles til footer */}
         <path
-          d="M0,80 C200,55 420,105 600,75 C780,45 1000,105 1200,80 L1200,120 L0,120 Z"
+          d="M0,170 C200,140 420,195 600,165 C780,135 1000,195 1200,170 L1200,240 L0,240 Z"
           fill={colors.dark}
         />
       </svg>
